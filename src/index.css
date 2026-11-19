@@ -1,0 +1,440 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  /* dezagamiz Blue & White Custom Design System (Light) */
+  --dz-bg: #f4f7fb;
+  --dz-surface: #ffffff;
+  --dz-surface-subtle: #eef4fc;
+  --dz-surface-tint: #e3eeff;
+  --dz-ink: #0a1d3b;
+  --dz-ink-secondary: #425a7a;
+  --dz-ink-muted: #6c82a0;
+  --dz-primary: #0b57d0;
+  --dz-primary-hover: #0842a0;
+  --dz-primary-deep: #092c63;
+  --dz-primary-bright: #1a73e8;
+  --dz-border: #d9e4f2;
+  --dz-border-strong: #b8cbe6;
+  --dz-success: #0d7a52;
+  --dz-success-bg: #e8f6f0;
+  --dz-warning: #b36b00;
+  --dz-warning-bg: #fff6e5;
+  --dz-danger: #c62828;
+  --dz-danger-bg: #fdecec;
+  --dz-shadow-sm: 0 1px 2px rgba(10, 29, 59, 0.04);
+  --dz-shadow-card: 0 8px 24px -8px rgba(11, 87, 208, 0.08), 0 1px 3px rgba(10, 29, 59, 0.04);
+}
+
+.dark {
+  color-scheme: dark;
+  /* dezagamiz Deep Navy Dark System */
+  --dz-bg: #071122;
+  --dz-surface: #0e1b33;
+  --dz-surface-subtle: #142442;
+  --dz-surface-tint: #193159;
+  --dz-ink: #f1f6ff;
+  --dz-ink-secondary: #b4c6e0;
+  --dz-ink-muted: #7f97ba;
+  --dz-primary: #3b82f6;
+  --dz-primary-hover: #2563eb;
+  --dz-primary-deep: #092c63;
+  --dz-primary-bright: #60a5fa;
+  --dz-border: #1e3356;
+  --dz-border-strong: #2c4875;
+  --dz-success: #34d399;
+  --dz-success-bg: #0d2b22;
+  --dz-warning: #fbbf24;
+  --dz-warning-bg: #2e200a;
+  --dz-danger: #f87171;
+  --dz-danger-bg: #311216;
+  --dz-shadow-sm: 0 1px 2px rgba(2, 6, 16, 0.35);
+  --dz-shadow-card: 0 10px 28px -8px rgba(2, 6, 16, 0.55), 0 1px 3px rgba(2, 6, 16, 0.35);
+}
+
+@layer base {
+  html {
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background-color: var(--dz-bg);
+    color: var(--dz-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: "Plus Jakarta Sans", "Manrope", sans-serif;
+    text-wrap: balance;
+  }
+
+  .font-serif-editorial {
+    font-family: "Newsreader", Georgia, "Times New Roman", serif;
+    text-wrap: balance;
+  }
+
+  .font-mono-tabular {
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Custom subtle blue-and-white focus ring for accessibility */
+.dz-focus:focus-visible {
+  outline: 2px solid var(--dz-primary);
+  outline-offset: 2px;
+}
+
+html.dark .dz-focus:focus-visible {
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+}
+
+/* Smooth transitions for inputs, selects & form controls in both Light and Dark mode */
+:where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  transition-property: border-color, box-shadow, background-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* View Transitions API radial circular reveal for Dark <-> Light mode */
+html.dz-theme-vt::view-transition-old(root),
+html.dz-theme-vt::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.dz-theme-vt::view-transition-old(root) {
+  z-index: 1;
+}
+
+html.dz-theme-vt::view-transition-new(root) {
+  z-index: 9998;
+}
+
+@keyframes dzThemeRadialRipple {
+  0% {
+    opacity: 0.42;
+    transform: scale(0.05);
+  }
+  55% {
+    opacity: 0.24;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
+.dz-theme-wave-overlay {
+  display: none;
+}
+
+html.dz-theme-switching .dz-theme-wave-overlay {
+  display: block;
+  background: radial-gradient(
+    circle at var(--dz-theme-x, 85%) var(--dz-theme-y, 32px),
+    rgba(26, 115, 232, 0.22) 0%,
+    rgba(11, 87, 208, 0.08) 38%,
+    transparent 70%
+  );
+  transform-origin: var(--dz-theme-x, 85%) var(--dz-theme-y, 32px);
+  animation: dzThemeRadialRipple 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Smooth surface, border, text & icon crossfade when toggling Dark Mode ON/OFF */
+html.dz-theme-switching,
+html.dz-theme-switching *:not(.dz-toggle-thumb):not(.gm-style *):not(.dz-theme-wave-overlay),
+html.dz-theme-switching *::before,
+html.dz-theme-switching *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity !important;
+  transition-duration: 420ms !important;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/* Springy thumb glide + subtle spin for Dark Mode ON/OFF switch */
+.dz-toggle-thumb {
+  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 240ms ease,
+    box-shadow 240ms ease;
+}
+
+/* Active glow reserved strictly for Dark Mode action elements so Light Mode stays identical */
+html.dark .dz-dark-active-glow {
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35),
+    0 8px 20px -6px rgba(59, 130, 246, 0.38);
+}
+
+/* Tactile micro-animations for every interactive button (compositor-only, excludes Google Maps internals) */
+:where(button:not(:disabled):not(.gm-style *)),
+:where([role="button"]:not([aria-disabled="true"]):not(.gm-style *)),
+a.dz-focus {
+  transition-property: transform, scale, background-color, border-color, color, box-shadow, opacity, filter;
+  transition-duration: 160ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) {
+  :where(button:not(:disabled):not(.gm-style *):not([class*="-translate-y"])):hover,
+  :where([role="button"]:not([aria-disabled="true"]):not(.gm-style *):not([class*="-translate-y"])):hover {
+    transform: translateY(-1px);
+  }
+
+  :where(button[class*="-translate-y"]:not(:disabled)):hover {
+    scale: 1.06;
+  }
+}
+
+:where(button:not(:disabled):not(.gm-style *)):active,
+:where([role="button"]:not([aria-disabled="true"]):not(.gm-style *)):active {
+  scale: 0.97;
+}
+
+button:disabled {
+  transition-property: background-color, border-color, color, opacity;
+  transition-duration: 150ms;
+}
+
+@keyframes dzLoadingSlide {
+  0% {
+    transform: translateX(-100%);
+    width: 40%;
+  }
+  50% {
+    transform: translateX(85%);
+    width: 55%;
+  }
+  100% {
+    transform: translateX(260%);
+    width: 40%;
+  }
+}
+
+@keyframes dzSectionIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.994);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dzCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dzPanelExpand {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dzModalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes dzBackdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dzIconFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes dzIconPop {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.75) rotate(-18deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes dzNavScaleIn {
+  from {
+    opacity: 0;
+    transform: scaleX(0.35);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes dzFeedbackSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dzPageSlideForward {
+  from {
+    opacity: 0;
+    transform: translate3d(44px, 0, 0) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes dzPageSlideBackward {
+  from {
+    opacity: 0;
+    transform: translate3d(-44px, 0, 0) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes dzPanelDrift {
+  0%,
+  100% {
+    transform: translate3d(-6%, -4%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(8%, 6%, 0) scale(1.06);
+  }
+}
+
+.dz-page-stage {
+  overflow-x: clip;
+}
+
+.dz-page-slide-forward {
+  animation: dzPageSlideForward 290ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dz-page-slide-backward {
+  animation: dzPageSlideBackward 290ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dz-panel-drift {
+  animation: dzPanelDrift 11s ease-in-out infinite;
+}
+
+.dz-loading-bar {
+  animation: dzLoadingSlide 1.35s ease-in-out infinite;
+}
+
+.dz-nav-indicator {
+  transform-origin: center;
+  animation: dzNavScaleIn 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dz-section-enter {
+  animation: dzSectionIn 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dz-card-enter {
+  animation: dzCardIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dz-panel-enter {
+  animation: dzPanelExpand 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dz-feedback-enter {
+  animation: dzFeedbackSlide 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dz-modal-backdrop {
+  animation: dzBackdropFade 180ms ease-out both;
+}
+
+.dz-modal-card {
+  animation: dzModalPop 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dz-icon-float {
+  animation: dzIconFloat 3.6s ease-in-out infinite;
+}
+
+.dz-icon-pop {
+  animation: dzIconPop 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dz-stagger-1 {
+  animation-delay: 45ms;
+}
+
+.dz-stagger-2 {
+  animation-delay: 90ms;
+}
+
+.dz-stagger-3 {
+  animation-delay: 135ms;
+}
+
+.dz-stagger-4 {
+  animation-delay: 180ms;
+}
+
+.dz-card-hover {
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 180ms ease;
+}
+
+@media (hover: hover) {
+  .dz-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--dz-shadow-card);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

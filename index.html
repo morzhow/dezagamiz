@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dezagamiz — Заправка газом из автомобиля в Узбекистане</title>
+    <meta
+      name="description"
+      content="Оплачивайте заправку метаном, пропаном и бензином в Узбекистане не выходя из машины — заправщик подойдёт к колонке и заправит ваш автомобиль."
+    />
+    <meta property="og:title" content="dezagamiz — Заправка газом из автомобиля" />
+    <meta
+      property="og:description"
+      content="Удобная оплата заправки из салона авто по привязанной карте Uzcard, Humo, Visa или Mastercard."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#0B57D0" />
+    <link rel="icon" type="image/jpeg" href="/dezagamiz-icon.jpg" />
+    <link rel="apple-touch-icon" href="/dezagamiz-icon.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <script>
+      (function () {
+        try {
+          if (window.localStorage.getItem('dz_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.dataset.theme = 'dark';
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', '#071122');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

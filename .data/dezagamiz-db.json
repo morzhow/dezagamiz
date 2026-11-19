@@ -1,0 +1,1104 @@
+{
+  "users": {
+    "usr-5c9399e7": {
+      "id": "usr-5c9399e7",
+      "fullName": "Тимур Абдуллаев",
+      "phone": "+998 90 123 45 67",
+      "carModel": "Chevrolet Gentra",
+      "plateNumber": "01 B 555 DA",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-c06f2f4e",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 5676",
+          "last4": "5676",
+          "expiry": "08/29",
+          "holderName": "ТИМУР АБДУЛЛАЕВ",
+          "isDefault": true,
+          "addedAt": "2026-11-14T08:35:20.408Z"
+        }
+      ],
+      "createdAt": "2026-11-14T08:35:20.408Z"
+    },
+    "usr-demo-tashkent": {
+      "id": "usr-demo-tashkent",
+      "fullName": "Азизбек Каримов",
+      "phone": "+998 90 777 45 12",
+      "carModel": "BYD Song Plus",
+      "plateNumber": "01 B 909 AA",
+      "preferredFuel": "propan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-demo-uzcard",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 5676",
+          "last4": "5676",
+          "expiry": "09/29",
+          "holderName": "AZIZBEK KARIMOV",
+          "isDefault": true,
+          "addedAt": "2026-11-14T08:56:25.557Z"
+        }
+      ],
+      "createdAt": "2026-11-14T08:56:25.557Z",
+      "vehicles": [
+        {
+          "id": "veh-primary-usr-demo-tashkent",
+          "carModel": "Chevrolet Lacetti",
+          "plateNumber": "01 A 888 AA",
+          "preferredFuel": "metan",
+          "isDefault": false,
+          "addedAt": "2026-11-14T08:56:25.557Z"
+        },
+        {
+          "id": "veh-ab7686fa",
+          "carModel": "Chevrolet Lacetti",
+          "plateNumber": "01 A 888 AA",
+          "preferredFuel": "propan",
+          "isDefault": false,
+          "addedAt": "2026-11-15T08:36:58.623Z"
+        },
+        {
+          "id": "veh-c8215bdd",
+          "carModel": "BYD Song Plus",
+          "plateNumber": "01 B 909 AA",
+          "preferredFuel": "propan",
+          "isDefault": true,
+          "addedAt": "2026-11-15T08:40:03.634Z"
+        }
+      ]
+    },
+    "usr-guest-171bc107": {
+      "id": "usr-guest-171bc107",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-da7557",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-15T08:21:37.304Z"
+        }
+      ],
+      "createdAt": "2026-11-15T08:21:37.304Z"
+    },
+    "usr-guest-8de2b1dc": {
+      "id": "usr-guest-8de2b1dc",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-dd9095",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-15T08:22:09.707Z"
+        }
+      ],
+      "createdAt": "2026-11-15T08:22:09.707Z"
+    },
+    "usr-guest-ba191f7b": {
+      "id": "usr-guest-ba191f7b",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-1f58cd",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-17T06:05:49.658Z"
+        }
+      ],
+      "createdAt": "2026-11-17T06:05:49.658Z"
+    },
+    "usr-guest-37da2c4c": {
+      "id": "usr-guest-37da2c4c",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-f2d467",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-17T06:06:20.064Z"
+        }
+      ],
+      "createdAt": "2026-11-17T06:06:20.064Z",
+      "personalCard": {
+        "id": "dzc-6e4e8341",
+        "cardNumber": "7788220811707246",
+        "maskedNumber": "7788 •••• •••• 7246",
+        "last4": "7246",
+        "holderName": "ГОСТЬ DEZAGAMIZ",
+        "expiry": "11/30",
+        "tier": "prime",
+        "style": "night",
+        "balanceUzs": 100000,
+        "bonusUzs": 0,
+        "cashbackRate": 0.05,
+        "isFrozen": false,
+        "carModel": "Chevrolet Cobalt (Гость)",
+        "plateNumber": "01 G 003 DZ",
+        "issuedAt": "2026-11-17T06:06:30.535Z"
+      }
+    },
+    "usr-guest-110820b9": {
+      "id": "usr-guest-110820b9",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-7d27b4",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-17T06:07:39.832Z"
+        }
+      ],
+      "createdAt": "2026-11-17T06:07:39.832Z"
+    },
+    "usr-guest-cdc2c6d7": {
+      "id": "usr-guest-cdc2c6d7",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-a6ab51",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T03:43:06.349Z"
+        }
+      ],
+      "createdAt": "2026-11-19T03:43:06.349Z"
+    },
+    "usr-guest-3277b567": {
+      "id": "usr-guest-3277b567",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-93d18d",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T03:45:27.680Z"
+        }
+      ],
+      "createdAt": "2026-11-19T03:45:27.680Z"
+    },
+    "usr-guest-39c774b0": {
+      "id": "usr-guest-39c774b0",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-15837c",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T03:48:03.171Z"
+        }
+      ],
+      "createdAt": "2026-11-19T03:48:03.171Z"
+    },
+    "usr-guest-8c29d498": {
+      "id": "usr-guest-8c29d498",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-947743",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T11:45:30.711Z"
+        }
+      ],
+      "createdAt": "2026-11-19T11:45:30.711Z"
+    },
+    "usr-guest-2c491966": {
+      "id": "usr-guest-2c491966",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-b697ea",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T11:46:14.067Z"
+        }
+      ],
+      "createdAt": "2026-11-19T11:46:14.067Z"
+    },
+    "usr-guest-14bb5ea6": {
+      "id": "usr-guest-14bb5ea6",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-3d7383",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T11:46:38.110Z"
+        }
+      ],
+      "createdAt": "2026-11-19T11:46:38.110Z"
+    },
+    "usr-guest-042605cf": {
+      "id": "usr-guest-042605cf",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-a886c3",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T11:46:57.304Z"
+        }
+      ],
+      "createdAt": "2026-11-19T11:46:57.304Z"
+    },
+    "usr-guest-50f13ba8": {
+      "id": "usr-guest-50f13ba8",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-8cc6d9",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T11:47:35.232Z"
+        }
+      ],
+      "createdAt": "2026-11-19T11:47:35.232Z"
+    },
+    "usr-guest-8cc18e68": {
+      "id": "usr-guest-8cc18e68",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-a36f15",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T11:48:09.252Z"
+        }
+      ],
+      "createdAt": "2026-11-19T11:48:09.252Z"
+    },
+    "usr-guest-be1d6d21": {
+      "id": "usr-guest-be1d6d21",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-97cdf1",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T11:48:47.328Z"
+        }
+      ],
+      "createdAt": "2026-11-19T11:48:47.328Z"
+    },
+    "usr-guest-e9666f0e": {
+      "id": "usr-guest-e9666f0e",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-8872d9",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T11:50:05.245Z"
+        }
+      ],
+      "createdAt": "2026-11-19T11:50:05.245Z"
+    },
+    "usr-guest-61ba131e": {
+      "id": "usr-guest-61ba131e",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-b5a414",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T11:50:33.349Z"
+        }
+      ],
+      "createdAt": "2026-11-19T11:50:33.349Z"
+    },
+    "usr-guest-925d4125": {
+      "id": "usr-guest-925d4125",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-5db347",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T11:51:03.406Z"
+        }
+      ],
+      "createdAt": "2026-11-19T11:51:03.406Z"
+    },
+    "usr-guest-63d42ac0": {
+      "id": "usr-guest-63d42ac0",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-534c22",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T11:51:45.483Z"
+        }
+      ],
+      "createdAt": "2026-11-19T11:51:45.483Z"
+    },
+    "usr-guest-b5619c0e": {
+      "id": "usr-guest-b5619c0e",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-ac8d64",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T12:00:48.929Z"
+        }
+      ],
+      "createdAt": "2026-11-19T12:00:48.929Z"
+    },
+    "usr-guest-801680af": {
+      "id": "usr-guest-801680af",
+      "fullName": "Гость dezagamiz",
+      "phone": "+998 90 000 00 03",
+      "carModel": "Chevrolet Cobalt (Гость)",
+      "plateNumber": "01 G 003 DZ",
+      "preferredFuel": "metan",
+      "isRegistered": true,
+      "cards": [
+        {
+          "id": "card-guest-f87f7c",
+          "network": "Uzcard",
+          "maskedNumber": "8600 •••• •••• 0003",
+          "last4": "0003",
+          "expiry": "12/29",
+          "holderName": "GUEST DEZAGAMIZ",
+          "isDefault": true,
+          "addedAt": "2026-11-19T12:00:54.249Z"
+        }
+      ],
+      "createdAt": "2026-11-19T12:00:54.249Z"
+    }
+  },
+  "sessions": {
+    "a7d59dc6-3887-4878-ad6d-6030c2b03ad7": "usr-5c9399e7",
+    "3e96bd20-13fb-410f-87e2-ea59c4c1f6ec": "usr-5c9399e7",
+    "024561f8-5f14-4e9c-9fa1-b071d4b818d6": "usr-5c9399e7",
+    "c453c5e3-e251-4cf9-b424-bbd4a3a2f95c": "usr-demo-tashkent",
+    "cb98c4c4-002b-48a5-ac11-0ef6fd45d43f": "usr-guest-171bc107",
+    "344092cc-0190-4a9b-a212-a53c84f7a8e9": "usr-guest-8de2b1dc",
+    "3d266584-eb06-4655-8117-31cda6a17906": "usr-demo-tashkent",
+    "4dd16c09-d259-4975-9cdd-cb555ae24ddf": "usr-demo-tashkent",
+    "2128791b-ae78-448e-84b6-57a6c0dc7868": "usr-demo-tashkent",
+    "5c52ca2f-240a-44e2-b5f6-9521cf60124c": "usr-demo-tashkent",
+    "05cf5a81-8fdf-4f0f-8c41-c0ad218c3e09": "usr-demo-tashkent",
+    "7d76ce74-8b03-4ca6-988d-41952332d841": "usr-demo-tashkent",
+    "da6deea5-400c-4f4f-b7c2-2b41a265f090": "usr-demo-tashkent",
+    "7fa817de-010e-4e4d-a28e-b1a2cb5710ba": "usr-demo-tashkent",
+    "d0b8cd71-36d6-435a-9836-64d74849a90e": "usr-demo-tashkent",
+    "ee0f388c-aaeb-4247-93c9-a5e62c0bfd6d": "usr-demo-tashkent",
+    "14303232-8a88-46a7-b6bb-aeab308b7987": "usr-demo-tashkent",
+    "9324cee1-7ec4-4238-a751-72f7b685c1f6": "usr-demo-tashkent",
+    "12a2a200-e96d-4dbf-9e0e-843c25272167": "usr-demo-tashkent",
+    "58f14b93-f94f-4f08-be28-83b48d8c89a9": "usr-demo-tashkent",
+    "1ff9fb27-25e7-49ac-bf96-5f0df0de581d": "usr-demo-tashkent",
+    "fd53b60a-3bdc-4e6e-a607-f861a3d440dc": "usr-demo-tashkent",
+    "6a400d0e-bf58-4e87-ae38-660cd51ebe6b": "usr-demo-tashkent",
+    "9cdcc825-f18c-4a32-86c0-2aec8755aa62": "usr-demo-tashkent",
+    "641ef684-7508-46ee-9037-c41040db5c0e": "usr-guest-ba191f7b",
+    "3216fe90-6a4c-4781-a497-223db0538e39": "usr-guest-37da2c4c",
+    "73838e61-37bf-4f07-b668-f4abe26ba513": "usr-demo-tashkent",
+    "9761665d-935f-4647-8188-c9128c8fc2a4": "usr-guest-110820b9",
+    "f81ec289-6194-447c-af20-be29e28ac6f1": "usr-demo-tashkent",
+    "7f478129-b510-43ee-a745-b7d47dc39806": "usr-demo-tashkent",
+    "43ab307d-985c-4fe1-be5c-a4c578d7a5f4": "usr-demo-tashkent",
+    "d334e993-bd34-48cd-8ece-e61784790427": "usr-demo-tashkent",
+    "012450ac-4a09-40c5-8c5d-8b3ffc2035bf": "usr-demo-tashkent",
+    "8a5c1622-cf24-471b-abd7-09c081dd65ef": "usr-demo-tashkent",
+    "fc58e082-d84c-4dc5-92bb-e372a5617599": "usr-demo-tashkent",
+    "808f1224-c96d-44bc-b5f8-23ace70cbda2": "usr-demo-tashkent",
+    "369d88c4-6ad8-4a04-b0ac-1db72d3f91ee": "usr-demo-tashkent",
+    "7ea5de55-cddd-41dc-956e-0f38fdc28924": "usr-demo-tashkent",
+    "ecfea901-95ed-439f-adbf-4a6d3dad59d3": "usr-demo-tashkent",
+    "b055ee9f-0943-44ff-8623-d49e48252e1c": "usr-demo-tashkent",
+    "3173960e-671f-4ce6-af24-b7c663136b25": "usr-demo-tashkent",
+    "e3fdf3a3-0745-4c1f-baa6-f44d82089b60": "usr-demo-tashkent",
+    "539d6a81-9c23-47e8-877d-1dff49d22e2a": "usr-demo-tashkent",
+    "6d69981b-f52a-4a5d-8602-910ce0219a9c": "usr-demo-tashkent",
+    "e90dda06-6dcc-418f-b49f-2ad8f475c7c6": "usr-demo-tashkent",
+    "3911979c-2058-44cb-92dc-cf9b242c2641": "usr-demo-tashkent",
+    "8788250c-1f22-4bfd-9d7d-d034eaa3adb0": "usr-demo-tashkent",
+    "a4c0a986-de60-464e-9969-af94c2d42c9e": "usr-demo-tashkent",
+    "bf8f1def-2900-4311-be71-8e9e4e9f1e3c": "usr-demo-tashkent",
+    "8801ef76-3e80-46f1-8f12-b053f9c879b2": "usr-demo-tashkent",
+    "0dadc268-dd46-49ec-9e07-8c4b201e9411": "usr-demo-tashkent",
+    "c0da2bdd-7697-4564-946a-8508ab4dc811": "usr-demo-tashkent",
+    "4df3c269-6ea5-4a8b-98e0-c6c30849c065": "usr-demo-tashkent",
+    "82a64979-5256-4d3b-aa20-3c575987071d": "usr-demo-tashkent",
+    "7ab1dcbd-6579-4789-a31a-2ab243cba1b3": "usr-demo-tashkent",
+    "21c878cb-0786-4932-9d56-e254b78fdb6e": "usr-demo-tashkent",
+    "8471e354-dc8d-4220-841f-ad756831fd09": "usr-demo-tashkent",
+    "cb263331-1814-405c-a50e-3cc64f8d623a": "usr-demo-tashkent",
+    "529cc518-6825-4ce0-971f-afd1d7cbee90": "usr-demo-tashkent",
+    "3f163428-a917-40a0-b070-6556dd72fd1d": "usr-demo-tashkent",
+    "da318cf8-6e23-4d86-b6ce-57c353fdf0bb": "usr-demo-tashkent",
+    "c94cbf88-ab9f-409f-b6d2-29505b2bcce0": "usr-demo-tashkent",
+    "4e03ef76-b9e6-4ea1-9da7-c63c5c5b6c45": "usr-demo-tashkent",
+    "4abbf3b0-b8a5-4319-9bb3-44ecf17b8a2f": "usr-demo-tashkent",
+    "181e1478-9019-4672-a3d9-baefeb83ae07": "usr-demo-tashkent",
+    "d92a8fd4-13d2-4201-864a-3a5da483a8d9": "usr-demo-tashkent",
+    "ed79617b-f59c-4fbd-be59-cdcd01b89848": "usr-demo-tashkent",
+    "b961d40e-09b6-485b-83ea-a02cc758d685": "usr-demo-tashkent",
+    "3769e9b2-48da-4e48-902e-7d421eac714c": "usr-demo-tashkent",
+    "eefa06d1-50df-46da-afdb-406bd842e6db": "usr-demo-tashkent",
+    "ea61936d-a275-4928-b9e1-9f7b2b3eec0f": "usr-demo-tashkent",
+    "310997ac-da7f-482e-8185-dd2f97813e97": "usr-demo-tashkent",
+    "9e87ca45-fc8e-48c5-b4cd-94b67c5e09cf": "usr-demo-tashkent",
+    "d354ae34-4be1-4020-a71e-4130e6076b4f": "usr-demo-tashkent",
+    "fa286e36-ce79-458f-a38b-db2ed4bc7b58": "usr-demo-tashkent",
+    "b6e5f111-a61e-46e2-b3ff-f42451f970aa": "usr-guest-cdc2c6d7",
+    "71359205-2473-4c9a-ba73-7b56b0b68031": "usr-guest-3277b567",
+    "7cc198ab-7a45-43a0-8f67-c8702b19b120": "usr-guest-39c774b0",
+    "5a1885b4-9fbf-4851-b1b9-6ed193d071f6": "usr-demo-tashkent",
+    "b55cfd86-b2bd-4e94-bcac-80f7182ef276": "usr-demo-tashkent",
+    "8e5291a2-4948-43af-a5cc-cbb2557ebdba": "usr-demo-tashkent",
+    "0bd80c3f-077e-491a-b2d4-f6ec5018bd54": "usr-demo-tashkent",
+    "81272bbd-ed56-47af-9b51-13ea68157469": "usr-guest-8c29d498",
+    "2201e281-467f-4031-b2bd-ef09cabfcdbb": "usr-guest-2c491966",
+    "9dfef5ba-81e5-4213-85c0-72540f7c1e42": "usr-guest-14bb5ea6",
+    "6b57522b-77f7-4d88-9a1a-fadf12019bf3": "usr-guest-042605cf",
+    "dc8074f5-a13b-4c18-a24f-b327c89b54e4": "usr-guest-50f13ba8",
+    "39125d8d-94a1-4197-9ff3-ce59ee5906a7": "usr-guest-8cc18e68",
+    "4bf23458-c5cf-4458-b44a-08abe6d9a6f5": "usr-guest-be1d6d21",
+    "9b86d85c-4a1c-4f38-a6f4-98e5974ca759": "usr-guest-e9666f0e",
+    "f11c340f-b051-447b-a92c-422eb6b05333": "usr-guest-61ba131e",
+    "83ec357b-a51a-4f4e-bc79-27df2b3cc05e": "usr-guest-925d4125",
+    "42bcd85b-1a1f-48a7-a647-7d6969bc018a": "usr-guest-63d42ac0",
+    "a87308b8-0631-4d64-bdf1-ea316ded9913": "usr-guest-b5619c0e",
+    "785377a6-ed88-470e-9e21-4c91e7bbd9f7": "usr-guest-801680af"
+  },
+  "creatorSessions": {
+    "c453c5e3-e251-4cf9-b424-bbd4a3a2f95c": "admin",
+    "7d120afa-2b57-4a6b-bfc7-b06ddf57ff7c": "admin",
+    "73838e61-37bf-4f07-b668-f4abe26ba513": "driver",
+    "8e5291a2-4948-43af-a5cc-cbb2557ebdba": "driver"
+  },
+  "guests": {
+    "gst-e5c77786-b8fa-4eeb-a48f-4fe52cb87325": {
+      "id": "gst-d06e4130",
+      "deviceToken": "gst-e5c77786-b8fa-4eeb-a48f-4fe52cb87325",
+      "startedAt": "2026-11-15T08:21:37.304Z",
+      "expiresAt": "2026-11-18T08:21:37.304Z",
+      "userId": "usr-guest-171bc107"
+    },
+    "gst-d4ddab89-b374-4a9d-92ec-ad66d6487a2c": {
+      "id": "gst-a7175e14",
+      "deviceToken": "gst-d4ddab89-b374-4a9d-92ec-ad66d6487a2c",
+      "startedAt": "2026-11-15T08:22:09.707Z",
+      "expiresAt": "2026-11-18T08:22:09.707Z",
+      "userId": "usr-guest-8de2b1dc"
+    },
+    "gst-06745e99-60a9-4489-a31d-7a29bddc1a8d": {
+      "id": "gst-add2837f",
+      "deviceToken": "gst-06745e99-60a9-4489-a31d-7a29bddc1a8d",
+      "startedAt": "2026-11-17T06:05:49.658Z",
+      "expiresAt": "2026-11-20T06:05:49.658Z",
+      "userId": "usr-guest-ba191f7b"
+    },
+    "gst-0a96dd4f-83dc-42fc-a582-a06293cc272a": {
+      "id": "gst-2966b839",
+      "deviceToken": "gst-0a96dd4f-83dc-42fc-a582-a06293cc272a",
+      "startedAt": "2026-11-17T06:06:20.064Z",
+      "expiresAt": "2026-11-20T06:06:20.064Z",
+      "userId": "usr-guest-37da2c4c"
+    },
+    "gst-188ffd66-3ff5-4bd4-8aa2-a1070c83e3a6": {
+      "id": "gst-355544a3",
+      "deviceToken": "gst-188ffd66-3ff5-4bd4-8aa2-a1070c83e3a6",
+      "startedAt": "2026-11-17T06:07:39.832Z",
+      "expiresAt": "2026-11-20T06:07:39.832Z",
+      "userId": "usr-guest-110820b9"
+    },
+    "gst-30b50103-5ed8-4046-b86f-ab29f6b471f6": {
+      "id": "gst-0743fdbb",
+      "deviceToken": "gst-30b50103-5ed8-4046-b86f-ab29f6b471f6",
+      "startedAt": "2026-11-19T03:43:06.349Z",
+      "expiresAt": "2026-11-22T03:43:06.349Z",
+      "userId": "usr-guest-cdc2c6d7"
+    },
+    "gst-987ca65d-1b01-407b-b1e7-17a214c448bf": {
+      "id": "gst-a8a04348",
+      "deviceToken": "gst-987ca65d-1b01-407b-b1e7-17a214c448bf",
+      "startedAt": "2026-11-19T03:45:27.680Z",
+      "expiresAt": "2026-11-22T03:45:27.680Z",
+      "userId": "usr-guest-3277b567"
+    },
+    "gst-aaec2b35-0e19-400c-a8ac-44e2b6edd6cb": {
+      "id": "gst-f7c23e3a",
+      "deviceToken": "gst-aaec2b35-0e19-400c-a8ac-44e2b6edd6cb",
+      "startedAt": "2026-11-19T03:48:03.171Z",
+      "expiresAt": "2026-11-22T03:48:03.171Z",
+      "userId": "usr-guest-39c774b0"
+    },
+    "gst-cd6f9c15-509d-45a9-ad38-09060d3b0b1b": {
+      "id": "gst-9fcfacaf",
+      "deviceToken": "gst-cd6f9c15-509d-45a9-ad38-09060d3b0b1b",
+      "startedAt": "2026-11-19T11:45:30.711Z",
+      "expiresAt": "2026-11-22T11:45:30.711Z",
+      "userId": "usr-guest-8c29d498"
+    },
+    "gst-9a09c909-6da7-4822-b43f-9eb495095c29": {
+      "id": "gst-43d76724",
+      "deviceToken": "gst-9a09c909-6da7-4822-b43f-9eb495095c29",
+      "startedAt": "2026-11-19T11:46:14.067Z",
+      "expiresAt": "2026-11-22T11:46:14.067Z",
+      "userId": "usr-guest-2c491966"
+    },
+    "gst-477783cc-eb74-4b2a-8b4f-b7367abebe0b": {
+      "id": "gst-0a61982a",
+      "deviceToken": "gst-477783cc-eb74-4b2a-8b4f-b7367abebe0b",
+      "startedAt": "2026-11-19T11:46:38.110Z",
+      "expiresAt": "2026-11-22T11:46:38.110Z",
+      "userId": "usr-guest-14bb5ea6"
+    },
+    "gst-8d2e65e8-16a9-4c01-b194-f196c3914d4e": {
+      "id": "gst-bb15fbdf",
+      "deviceToken": "gst-8d2e65e8-16a9-4c01-b194-f196c3914d4e",
+      "startedAt": "2026-11-19T11:46:57.304Z",
+      "expiresAt": "2026-11-22T11:46:57.304Z",
+      "userId": "usr-guest-042605cf"
+    },
+    "gst-c8151ac4-1ad2-4dac-a709-2e85c32c88d9": {
+      "id": "gst-f93dc0c1",
+      "deviceToken": "gst-c8151ac4-1ad2-4dac-a709-2e85c32c88d9",
+      "startedAt": "2026-11-19T11:47:35.232Z",
+      "expiresAt": "2026-11-22T11:47:35.232Z",
+      "userId": "usr-guest-50f13ba8"
+    },
+    "gst-c4de184f-7967-4354-9683-c3bacc4cd5e4": {
+      "id": "gst-0937f4bc",
+      "deviceToken": "gst-c4de184f-7967-4354-9683-c3bacc4cd5e4",
+      "startedAt": "2026-11-19T11:48:09.252Z",
+      "expiresAt": "2026-11-22T11:48:09.252Z",
+      "userId": "usr-guest-8cc18e68"
+    },
+    "gst-464c8c4a-5601-4f65-b124-34c4bbaa6032": {
+      "id": "gst-f5cc5066",
+      "deviceToken": "gst-464c8c4a-5601-4f65-b124-34c4bbaa6032",
+      "startedAt": "2026-11-19T11:48:47.328Z",
+      "expiresAt": "2026-11-22T11:48:47.328Z",
+      "userId": "usr-guest-be1d6d21"
+    },
+    "gst-250b95b2-c43c-453c-aeb0-7596ab539c18": {
+      "id": "gst-aa4fc023",
+      "deviceToken": "gst-250b95b2-c43c-453c-aeb0-7596ab539c18",
+      "startedAt": "2026-11-19T11:50:05.245Z",
+      "expiresAt": "2026-11-22T11:50:05.245Z",
+      "userId": "usr-guest-e9666f0e"
+    },
+    "gst-e30c7969-ecdc-4e2b-a39c-1fdeaab3d633": {
+      "id": "gst-4f593985",
+      "deviceToken": "gst-e30c7969-ecdc-4e2b-a39c-1fdeaab3d633",
+      "startedAt": "2026-11-19T11:50:33.349Z",
+      "expiresAt": "2026-11-22T11:50:33.349Z",
+      "userId": "usr-guest-61ba131e"
+    },
+    "gst-fc917749-7adb-4f8b-b39d-42096f6fe83b": {
+      "id": "gst-752bb7d5",
+      "deviceToken": "gst-fc917749-7adb-4f8b-b39d-42096f6fe83b",
+      "startedAt": "2026-11-19T11:51:03.406Z",
+      "expiresAt": "2026-11-22T11:51:03.406Z",
+      "userId": "usr-guest-925d4125"
+    },
+    "gst-2b7da227-4c1b-4aef-bdee-3330f93b7617": {
+      "id": "gst-aa566c2a",
+      "deviceToken": "gst-2b7da227-4c1b-4aef-bdee-3330f93b7617",
+      "startedAt": "2026-11-19T11:51:45.483Z",
+      "expiresAt": "2026-11-22T11:51:45.483Z",
+      "userId": "usr-guest-63d42ac0"
+    },
+    "gst-d3de4809-4640-4dc7-8857-05a899041350": {
+      "id": "gst-7c3e6db7",
+      "deviceToken": "gst-d3de4809-4640-4dc7-8857-05a899041350",
+      "startedAt": "2026-11-19T12:00:48.929Z",
+      "expiresAt": "2026-11-22T12:00:48.929Z",
+      "userId": "usr-guest-b5619c0e"
+    },
+    "gst-600e6947-7479-4886-a388-02df5fedc333": {
+      "id": "gst-bd4ed8a2",
+      "deviceToken": "gst-600e6947-7479-4886-a388-02df5fedc333",
+      "startedAt": "2026-11-19T12:00:54.249Z",
+      "expiresAt": "2026-11-22T12:00:54.249Z",
+      "userId": "usr-guest-801680af"
+    }
+  },
+  "guestSessions": {
+    "cb98c4c4-002b-48a5-ac11-0ef6fd45d43f": "gst-e5c77786-b8fa-4eeb-a48f-4fe52cb87325",
+    "344092cc-0190-4a9b-a212-a53c84f7a8e9": "gst-d4ddab89-b374-4a9d-92ec-ad66d6487a2c",
+    "641ef684-7508-46ee-9037-c41040db5c0e": "gst-06745e99-60a9-4489-a31d-7a29bddc1a8d",
+    "3216fe90-6a4c-4781-a497-223db0538e39": "gst-0a96dd4f-83dc-42fc-a582-a06293cc272a",
+    "9761665d-935f-4647-8188-c9128c8fc2a4": "gst-188ffd66-3ff5-4bd4-8aa2-a1070c83e3a6",
+    "b6e5f111-a61e-46e2-b3ff-f42451f970aa": "gst-30b50103-5ed8-4046-b86f-ab29f6b471f6",
+    "71359205-2473-4c9a-ba73-7b56b0b68031": "gst-987ca65d-1b01-407b-b1e7-17a214c448bf",
+    "7cc198ab-7a45-43a0-8f67-c8702b19b120": "gst-aaec2b35-0e19-400c-a8ac-44e2b6edd6cb",
+    "81272bbd-ed56-47af-9b51-13ea68157469": "gst-cd6f9c15-509d-45a9-ad38-09060d3b0b1b",
+    "2201e281-467f-4031-b2bd-ef09cabfcdbb": "gst-9a09c909-6da7-4822-b43f-9eb495095c29",
+    "9dfef5ba-81e5-4213-85c0-72540f7c1e42": "gst-477783cc-eb74-4b2a-8b4f-b7367abebe0b",
+    "6b57522b-77f7-4d88-9a1a-fadf12019bf3": "gst-8d2e65e8-16a9-4c01-b194-f196c3914d4e",
+    "dc8074f5-a13b-4c18-a24f-b327c89b54e4": "gst-c8151ac4-1ad2-4dac-a709-2e85c32c88d9",
+    "39125d8d-94a1-4197-9ff3-ce59ee5906a7": "gst-c4de184f-7967-4354-9683-c3bacc4cd5e4",
+    "4bf23458-c5cf-4458-b44a-08abe6d9a6f5": "gst-464c8c4a-5601-4f65-b124-34c4bbaa6032",
+    "9b86d85c-4a1c-4f38-a6f4-98e5974ca759": "gst-250b95b2-c43c-453c-aeb0-7596ab539c18",
+    "f11c340f-b051-447b-a92c-422eb6b05333": "gst-e30c7969-ecdc-4e2b-a39c-1fdeaab3d633",
+    "83ec357b-a51a-4f4e-bc79-27df2b3cc05e": "gst-fc917749-7adb-4f8b-b39d-42096f6fe83b",
+    "42bcd85b-1a1f-48a7-a647-7d6969bc018a": "gst-2b7da227-4c1b-4aef-bdee-3330f93b7617",
+    "a87308b8-0631-4d64-bdf1-ea316ded9913": "gst-d3de4809-4640-4dc7-8857-05a899041350",
+    "785377a6-ed88-470e-9e21-4c91e7bbd9f7": "gst-600e6947-7479-4886-a388-02df5fedc333"
+  },
+  "stationOverrides": {},
+  "orders": [
+    {
+      "id": "ord-cdc3c713",
+      "receiptCode": "DZ-836995",
+      "userId": "usr-5c9399e7",
+      "stationId": "st-tashkent-chilonzor",
+      "stationName": "dezagamiz АГНКС Чиланзар-14",
+      "stationAddress": "ул. Бунёдкор, 42, Чиланзарский р-н",
+      "city": "Ташкент",
+      "bayNumber": 1,
+      "fuelCode": "metan",
+      "fuelLabel": "Метан (CNG)",
+      "unit": "м³",
+      "pricePerUnit": 3850,
+      "amountUzs": 100000,
+      "targetVolume": 25.97,
+      "dispensedVolume": 25.97,
+      "cardId": "card-c06f2f4e",
+      "cardMasked": "8600 •••• •••• 5676",
+      "cardNetwork": "Uzcard",
+      "carModel": "Chevrolet Gentra",
+      "plateNumber": "01 B 555 DA",
+      "attendant": {
+        "id": "att-2",
+        "name": "Джамшид Усманов",
+        "experienceYears": 6,
+        "rating": 5,
+        "shiftBadge": "Смена А · Старший оператор"
+      },
+      "stage": "completed",
+      "etaSeconds": 0,
+      "createdAt": "2026-11-14T08:35:37.956Z",
+      "updatedAt": "2026-11-14T08:35:49.142Z",
+      "completedAt": "2026-11-14T08:35:49.142Z"
+    },
+    {
+      "id": "ord-demo-101",
+      "receiptCode": "DZ-482910",
+      "userId": "usr-demo-tashkent",
+      "stationId": "st-tashkent-chilonzor",
+      "stationName": "dezagamiz АГНКС Чиланзар-14",
+      "stationAddress": "ул. Бунёдкор, 42, Чиланзарский р-н",
+      "city": "Ташкент",
+      "bayNumber": 2,
+      "fuelCode": "metan",
+      "fuelLabel": "Метан (CNG)",
+      "unit": "м³",
+      "pricePerUnit": 5750,
+      "amountUzs": 115000,
+      "targetVolume": 20,
+      "dispensedVolume": 20,
+      "cardId": "card-demo-uzcard",
+      "cardMasked": "8600 •••• •••• 5676",
+      "cardNetwork": "Uzcard",
+      "carModel": "Chevrolet Cobalt",
+      "plateNumber": "01 A 777 AA",
+      "attendant": {
+        "id": "att-1",
+        "name": "Шерзод Рахмонов",
+        "experienceYears": 4,
+        "rating": 4.9,
+        "shiftBadge": "Смена А · Метан-эксперт"
+      },
+      "stage": "completed",
+      "etaSeconds": 0,
+      "rating": 5,
+      "createdAt": "2026-11-13T08:56:25.557Z",
+      "updatedAt": "2026-11-13T08:59:45.557Z",
+      "completedAt": "2026-11-13T08:59:45.558Z"
+    },
+    {
+      "id": "ord-6f57d75c",
+      "receiptCode": "DZ-496656",
+      "userId": "usr-demo-tashkent",
+      "stationId": "st-fergana-ring",
+      "stationName": "dezagamiz Фергана Кольцо",
+      "stationAddress": "Малая кольцевая дорога, 12, Фергана",
+      "city": "Фергана",
+      "bayNumber": 1,
+      "fuelCode": "metan",
+      "fuelLabel": "Метан (CNG)",
+      "unit": "м³",
+      "pricePerUnit": 5700,
+      "amountUzs": 260000,
+      "targetVolume": 45.61,
+      "dispensedVolume": 45.61,
+      "cardId": "card-demo-uzcard",
+      "cardMasked": "8600 •••• •••• 5676",
+      "cardNetwork": "Uzcard",
+      "carModel": "Chevrolet Cobalt",
+      "plateNumber": "01 A 777 AA",
+      "attendant": {
+        "id": "att-8",
+        "name": "Исломжон Юлдашев",
+        "experienceYears": 5,
+        "rating": 4.9,
+        "shiftBadge": "Смена А · Оператор АГНКС"
+      },
+      "stage": "completed",
+      "etaSeconds": 0,
+      "createdAt": "2026-11-15T08:31:37.655Z",
+      "updatedAt": "2026-11-15T08:31:49.992Z",
+      "completedAt": "2026-11-15T08:31:49.992Z"
+    },
+    {
+      "id": "ord-6fa547dc",
+      "receiptCode": "DZ-763739",
+      "userId": "usr-demo-tashkent",
+      "stationId": "st-tashkent-chilonzor",
+      "stationName": "dezagamiz АГНКС Чиланзар-14",
+      "stationAddress": "ул. Бунёдкор, 42, Чиланзарский р-н",
+      "city": "Ташкент",
+      "bayNumber": 1,
+      "fuelCode": "propan",
+      "fuelLabel": "Пропан (LPG)",
+      "unit": "л",
+      "pricePerUnit": 8900,
+      "amountUzs": 100000,
+      "targetVolume": 11.24,
+      "dispensedVolume": 11.24,
+      "cardId": "dzc-89eac683",
+      "cardMasked": "7788 •••• •••• 8544",
+      "cardNetwork": "dezagamiz",
+      "cashbackUzs": 5000,
+      "carModel": "BYD Song Plus",
+      "plateNumber": "01 B 909 AA",
+      "attendant": {
+        "id": "att-2",
+        "name": "Джамшид Усманов",
+        "experienceYears": 6,
+        "rating": 5,
+        "shiftBadge": "Смена А · Старший оператор"
+      },
+      "stage": "completed",
+      "etaSeconds": 0,
+      "createdAt": "2026-11-15T10:29:06.819Z",
+      "updatedAt": "2026-11-15T10:29:09.021Z",
+      "completedAt": "2026-11-15T10:29:09.021Z"
+    }
+  ],
+  "musicTracks": {
+    "usr-demo-tashkent": [],
+    "usr-guest-3277b567": [
+      {
+        "id": "mel-gm-mwn0f1ns-g11o",
+        "title": "Лунный свет",
+        "subtitle": "Спокойная ночная мелодия для электропиано",
+        "kind": "melody",
+        "source": "gemini",
+        "bpm": 96,
+        "keySignature": "Am",
+        "synthPreset": "rhodes",
+        "notes": [
+          {
+            "freqHz": 329.63,
+            "offsetBeats": 0,
+            "durationBeats": 1.5,
+            "velocity": 0.65
+          },
+          {
+            "freqHz": 392,
+            "offsetBeats": 1.5,
+            "durationBeats": 0.5,
+            "velocity": 0.6
+          },
+          {
+            "freqHz": 493.88,
+            "offsetBeats": 2,
+            "durationBeats": 1,
+            "velocity": 0.72
+          },
+          {
+            "freqHz": 440,
+            "offsetBeats": 3,
+            "durationBeats": 1,
+            "velocity": 0.65
+          },
+          {
+            "freqHz": 523.25,
+            "offsetBeats": 4,
+            "durationBeats": 1.5,
+            "velocity": 0.75
+          },
+          {
+            "freqHz": 440,
+            "offsetBeats": 5.5,
+            "durationBeats": 0.5,
+            "velocity": 0.62
+          },
+          {
+            "freqHz": 392,
+            "offsetBeats": 6,
+            "durationBeats": 0.75,
+            "velocity": 0.65
+          },
+          {
+            "freqHz": 329.63,
+            "offsetBeats": 6.75,
+            "durationBeats": 1.25,
+            "velocity": 0.58
+          },
+          {
+            "freqHz": 392,
+            "offsetBeats": 8,
+            "durationBeats": 1.5,
+            "velocity": 0.68
+          },
+          {
+            "freqHz": 493.88,
+            "offsetBeats": 9.5,
+            "durationBeats": 0.5,
+            "velocity": 0.65
+          },
+          {
+            "freqHz": 587.33,
+            "offsetBeats": 10,
+            "durationBeats": 1,
+            "velocity": 0.75
+          },
+          {
+            "freqHz": 523.25,
+            "offsetBeats": 11,
+            "durationBeats": 1,
+            "velocity": 0.68
+          },
+          {
+            "freqHz": 493.88,
+            "offsetBeats": 12,
+            "durationBeats": 1,
+            "velocity": 0.7
+          },
+          {
+            "freqHz": 440,
+            "offsetBeats": 13,
+            "durationBeats": 0.5,
+            "velocity": 0.62
+          },
+          {
+            "freqHz": 392,
+            "offsetBeats": 13.5,
+            "durationBeats": 1,
+            "velocity": 0.6
+          },
+          {
+            "freqHz": 329.63,
+            "offsetBeats": 14.5,
+            "durationBeats": 0.75,
+            "velocity": 0.55
+          },
+          {
+            "freqHz": 293.66,
+            "offsetBeats": 15.25,
+            "durationBeats": 0.75,
+            "velocity": 0.52
+          }
+        ],
+        "durationSeconds": 10.4,
+        "createdAt": "2026-11-19T03:47:48.904Z"
+      }
+    ]
+  },
+  "musicPrefs": {
+    "usr-demo-tashkent": {
+      "activeTrackId": "preset-tashkent-night",
+      "fuelingChimeTrackId": "preset-dezagamiz-chime",
+      "autoPlayOnFueling": true,
+      "volume": 0.75
+    },
+    "usr-guest-3277b567": {
+      "activeTrackId": "mel-gm-mwn0f1ns-g11o",
+      "fuelingChimeTrackId": "preset-dezagamiz-chime",
+      "autoPlayOnFueling": true,
+      "volume": 0.75
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "dezagamiz",
+  "description": "Оплата заправки газом и топливом в Узбекистане не выходя из автомобиля — заправщик сам подходит и заправляет ваше авто.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
