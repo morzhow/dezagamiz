@@ -11,6 +11,8 @@ import type {
   RankedStation,
   StationCity,
   StationCityFilter,
+  StationQueueLevel,
+  StationSortMode,
 } from '../types/dezagamiz';
 
 export const FUEL_META: Record<
@@ -222,7 +224,7 @@ export function canAccessApp(user: DriverUser | null): boolean {
   return Boolean(user.isRegistered && Array.isArray(user.cards) && user.cards.length > 0);
 }
 
-export const CREATOR_ACCESS_CODE = 'Morzhowich88';
+export const CREATOR_ACCESS_CODE = 'MorzhowichKittisiwich88';
 
 export function verifyCreatorCode(code: string): boolean {
   return code.trim() === CREATOR_ACCESS_CODE;
@@ -300,14 +302,38 @@ export function haversineDistanceKm(a: LatLngPoint, b: LatLngPoint): number {
   return km < 1 ? Math.round(km * 1000) / 1000 : Math.round(km * 100) / 100;
 }
 
+export function isFuelEnabledOnStation(
+  station: FuelStation,
+  fuelCode: FuelCode,
+): boolean {
+  if (!station.prices[fuelCode]) return false;
+  if (station.disabledFuels && station.disabledFuels.includes(fuelCode)) {
+    return false;
+  }
+  return station.bays.some((b) => b.supportedFuels.includes(fuelCode));
+}
+
+export function getEffectiveQueueLevel(station: FuelStation): StationQueueLevel {
+  if (station.queueLevel) return station.queueLevel;
+  const total = Math.max(1, station.bays.length);
+  const free = station.bays.filter((b) => b.available).length;
+  const ratio = free / total;
+  if (ratio >= 0.55) return 'low';
+  if (ratio >= 0.25) return 'medium';
+  return 'high';
+}
+
 export function countAvailableBaysForFuel(
   station: FuelStation,
   fuelFilter: FuelCode | 'all',
 ): number {
+  if (station.operationalStatus === 'maintenance') {
+    return 0;
+  }
   if (fuelFilter === 'all') {
     return station.bays.filter((b) => b.available).length;
   }
-  if (!station.prices[fuelFilter]) return 0;
+  if (!isFuelEnabledOnStation(station, fuelFilter)) return 0;
   return station.bays.filter(
     (b) => b.available && b.supportedFuels.includes(fuelFilter),
   ).length;
@@ -319,25 +345,72 @@ export function stationSupportsFuel(
   requireAvailableBay: boolean = false,
 ): boolean {
   if (fuelFilter === 'all') {
+    if (station.operationalStatus === 'maintenance' && requireAvailableBay) {
+      return false;
+    }
     return requireAvailableBay
       ? station.bays.some((b) => b.available)
       : station.bays.length > 0;
   }
-  const hasPrice = Boolean(station.prices[fuelFilter]);
-  if (!hasPrice) return false;
-  const hasAnyBay = station.bays.some((b) =>
-    b.supportedFuels.includes(fuelFilter),
-  );
-  if (!hasAnyBay) return false;
+  if (!isFuelEnabledOnStation(station, fuelFilter)) return false;
   if (!requireAvailableBay) return true;
   return countAvailableBaysForFuel(station, fuelFilter) > 0;
+}
+
+export function computeStationBestScore(
+  station: RankedStation,
+  vehicleProfile?: VehicleFuelProfile | null,
+): number {
+  let score = 0;
+
+  // 1. Operational status
+  const op = station.operationalStatus || 'open';
+  if (op === 'open') score += 100;
+  else if (op === 'busy') score += 55;
+  else score -= 250;
+
+  // 2. Fuel filter support & free bay
+  if (station.supportsSelectedFuel) score += 40;
+  if (station.hasAvailableBayForFuel) score += 30;
+
+  // 3. Compatibility with driver's car model
+  if (vehicleProfile && vehicleProfile.powertrain !== 'ev_only') {
+    const hasCarFuel = vehicleProfile.supportedFuels.some((code) =>
+      isFuelEnabledOnStation(station, code),
+    );
+    score += hasCarFuel ? 35 : -55;
+  }
+
+  // 4. Queue load & bay freedom ratio
+  const queue = getEffectiveQueueLevel(station);
+  if (queue === 'low') score += 28;
+  else if (queue === 'medium') score += 12;
+  else score -= 18;
+
+  const totalBays = Math.max(1, station.bays.length);
+  const freeBays =
+    station.operationalStatus === 'maintenance'
+      ? 0
+      : station.bays.filter((b) => b.available).length;
+  score += Math.round((freeBays / totalBays) * 16);
+
+  // 5. Distance penalty (closer is better)
+  const distKm = station.straightDistanceKm ?? station.distanceKm;
+  score -= Math.min(80, Math.round(distKm * 2.4));
+
+  return score;
 }
 
 export function rankStationsByProximity(
   origin: LatLngPoint | null,
   stations: FuelStation[],
   fuelFilter: FuelCode | 'all' = 'all',
+  vehicleCarModel?: string | null,
 ): RankedStation[] {
+  const vehicleProfile = vehicleCarModel
+    ? getVehicleFuelProfile(vehicleCarModel)
+    : null;
+
   const ranked: RankedStation[] = stations.map((station) => {
     const hasCoords =
       typeof station.lat === 'number' &&
@@ -360,14 +433,23 @@ export function rankStationsByProximity(
     const supportsSelectedFuel = stationSupportsFuel(station, fuelFilter, false);
     const freeBaysForFuel = countAvailableBaysForFuel(station, fuelFilter);
     const hasAvailableBayForFuel = freeBaysForFuel > 0;
+    const vehicleCompatible =
+      !vehicleProfile || vehicleProfile.powertrain === 'ev_only'
+        ? true
+        : vehicleProfile.supportedFuels.some((code) =>
+            isFuelEnabledOnStation(station, code),
+          );
 
-    return {
+    const base: RankedStation = {
       ...station,
       straightDistanceKm,
       supportsSelectedFuel,
       hasAvailableBayForFuel,
       freeBaysForFuel,
+      vehicleCompatible,
     };
+    base.bestScore = computeStationBestScore(base, vehicleProfile);
+    return base;
   });
 
   ranked.sort((a, b) => {
@@ -392,15 +474,61 @@ export function rankStationsByProximity(
   return ranked;
 }
 
+export function rankStationsBestNearby(
+  origin: LatLngPoint | null,
+  stations: FuelStation[],
+  fuelFilter: FuelCode | 'all' = 'all',
+  vehicleCarModel?: string | null,
+): RankedStation[] {
+  const ranked = rankStationsByProximity(
+    origin,
+    stations,
+    fuelFilter,
+    vehicleCarModel,
+  );
+  ranked.sort((a, b) => {
+    const scoreDiff = (b.bestScore ?? 0) - (a.bestScore ?? 0);
+    if (scoreDiff !== 0) return scoreDiff;
+    const distA = a.straightDistanceKm ?? a.distanceKm;
+    const distB = b.straightDistanceKm ?? b.distanceKm;
+    return distA - distB;
+  });
+  return ranked;
+}
+
+export function rankStationsWithMode(
+  origin: LatLngPoint | null,
+  stations: FuelStation[],
+  fuelFilter: FuelCode | 'all' = 'all',
+  sortMode: StationSortMode = 'nearest',
+  vehicleCarModel?: string | null,
+): RankedStation[] {
+  if (sortMode === 'best_nearby') {
+    return rankStationsBestNearby(origin, stations, fuelFilter, vehicleCarModel);
+  }
+  return rankStationsByProximity(origin, stations, fuelFilter, vehicleCarModel);
+}
+
 export function findNearestStationForFuel(
   origin: LatLngPoint | null,
   stations: FuelStation[],
   fuelFilter: FuelCode | 'all' = 'all',
+  sortMode: StationSortMode = 'nearest',
+  vehicleCarModel?: string | null,
 ): RankedStation | null {
-  const ranked = rankStationsByProximity(origin, stations, fuelFilter);
-  const matching = ranked.filter((s) => s.supportsSelectedFuel);
-  if (matching.length === 0) return null;
-  return matching[0];
+  const ranked = rankStationsWithMode(
+    origin,
+    stations,
+    fuelFilter,
+    sortMode,
+    vehicleCarModel,
+  );
+  const matching = ranked.filter(
+    (s) => s.supportsSelectedFuel && s.operationalStatus !== 'maintenance',
+  );
+  if (matching.length > 0) return matching[0];
+  const anyMatching = ranked.filter((s) => s.supportsSelectedFuel);
+  return anyMatching[0] || null;
 }
 
 export function formatCoordinates(lat?: number, lng?: number): string {
@@ -1044,4 +1172,193 @@ export function accuracyMetersToPixels(
   }
   const px = accuracyMeters / metersPerPixel;
   return Math.min(400, Math.round(px * 10) / 10);
+}
+
+export function computeBayDisplayCode(stationId: string, bayNumber: number): string {
+  const seed = `${stationId}#${bayNumber}`;
+  let hash = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  const codeNum = 1000 + ((hash >>> 0) % 9000);
+  return String(codeNum);
+}
+
+export type VehiclePowertrain = 'ice_gbo_ready' | 'hybrid_petrol' | 'ev_only';
+
+export interface VehicleFuelProfile {
+  powertrain: VehiclePowertrain;
+  supportedFuels: FuelCode[];
+  recommendedFuel: FuelCode;
+  supportsGas: boolean;
+}
+
+export const CAR_MODEL_SUGGESTIONS: string[] = [
+  'Chevrolet Cobalt',
+  'Chevrolet Lacetti',
+  'Chevrolet Gentra',
+  'Chevrolet Nexia 3',
+  'Chevrolet Damas',
+  'Chevrolet Spark',
+  'Chevrolet Onix',
+  'Chevrolet Malibu',
+  'BYD Song Plus',
+  'BYD Chazor',
+  'BYD Atto 3',
+  'Kia K5',
+  'Tesla Model 3',
+  'Zeekr 001',
+];
+
+export function getVehicleFuelProfile(carModel: string | null | undefined): VehicleFuelProfile {
+  const raw = (carModel || '').trim().toLowerCase();
+  if (!raw) {
+    return {
+      powertrain: 'ice_gbo_ready',
+      supportedFuels: ['metan', 'propan', 'ai92', 'ai95'],
+      recommendedFuel: 'metan',
+      supportsGas: true,
+    };
+  }
+
+  // Explicit gas retrofit marker overrides hybrid/petrol defaults
+  const explicitGasMarker =
+    raw.includes('гбо') ||
+    raw.includes('gbo') ||
+    raw.includes('cng') ||
+    raw.includes('lpg') ||
+    raw.includes('метан') ||
+    raw.includes('metan') ||
+    raw.includes('пропан') ||
+    raw.includes('propan');
+
+  if (explicitGasMarker) {
+    return {
+      powertrain: 'ice_gbo_ready',
+      supportedFuels: ['metan', 'propan', 'ai92', 'ai95'],
+      recommendedFuel: raw.includes('пропан') || raw.includes('propan') ? 'propan' : 'metan',
+      supportsGas: true,
+    };
+  }
+
+  // Pure electric vehicles (BEV)
+  const evPatterns = [
+    'tesla',
+    'zeekr',
+    'byd dolphin',
+    'byd atto',
+    'byd yuan',
+    'byd seal',
+    'byd seagull',
+    'byd e2',
+    'volkswagen id',
+    'vw id',
+    'id.3',
+    'id.4',
+    'id.6',
+    'nissan leaf',
+    'ioniq 5',
+    'ioniq 6',
+    'kia ev6',
+    'kia ev9',
+    'taycan',
+    'bmw i3',
+    'bmw i4',
+    'bmw ix',
+    'avatr',
+    'hongqi e-hs9',
+    'leapmotor',
+    'электро',
+    'electro',
+  ];
+  if (evPatterns.some((p) => raw.includes(p)) || /\bev\b/i.test(raw)) {
+    return {
+      powertrain: 'ev_only',
+      supportedFuels: [],
+      recommendedFuel: 'ai95',
+      supportsGas: false,
+    };
+  }
+
+  // Hybrids and modern petrol-only vehicles without GBO
+  const hybridOrPetrolOnlyPatterns = [
+    'byd song',
+    'byd chazor',
+    'byd destroyer',
+    'byd han',
+    'byd tang',
+    'byd qin',
+    'lixiang',
+    'li auto',
+    'li l7',
+    'li l8',
+    'li l9',
+    'chery tiggo',
+    'toyota prius',
+    'camry hybrid',
+    'corolla hybrid',
+    'rav4 hybrid',
+    'chevrolet equinox',
+    'chevrolet malibu',
+    'chevrolet tahoe',
+    'chevrolet trailblazer',
+    'chevrolet traverse',
+    'kia k5',
+    'kia k8',
+    'kia sportage',
+    'kia sorento',
+    'hyundai sonata',
+    'hyundai tucson',
+    'hyundai santa fe',
+    'hyundai elantra',
+    'geely',
+    'haval',
+    'jetour',
+    'changan',
+    'hybrid',
+    'гибрид',
+  ];
+  if (hybridOrPetrolOnlyPatterns.some((p) => raw.includes(p))) {
+    return {
+      powertrain: 'hybrid_petrol',
+      supportedFuels: ['ai92', 'ai95'],
+      recommendedFuel: 'ai95',
+      supportsGas: false,
+    };
+  }
+
+  // Popular mass-market UZ cars commonly run Metan / Propan / AI-92
+  const classicUzGboPatterns = [
+    'lacetti',
+    'лачетти',
+    'cobalt',
+    'кобальт',
+    'gentra',
+    'джентра',
+    'nexia',
+    'нексия',
+    'damas',
+    'дамас',
+    'labo',
+    'spark',
+    'спарк',
+    'matiz',
+    'матиз',
+  ];
+  if (classicUzGboPatterns.some((p) => raw.includes(p))) {
+    return {
+      powertrain: 'ice_gbo_ready',
+      supportedFuels: ['metan', 'propan', 'ai92'],
+      recommendedFuel: 'metan',
+      supportsGas: true,
+    };
+  }
+
+  return {
+    powertrain: 'ice_gbo_ready',
+    supportedFuels: ['metan', 'propan', 'ai92', 'ai95'],
+    recommendedFuel: 'metan',
+    supportsGas: true,
+  };
 }

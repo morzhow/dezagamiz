@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Clock } from 'lucide-react';
+import { Clock, KeyRound, X } from 'lucide-react';
 import {
   autostartDemoSession,
   enterGuestMode,
@@ -88,6 +88,10 @@ export default function App() {
   const [initialGateMode, setInitialGateMode] = useState<
     'register' | 'login' | 'guest' | 'creator'
   >('register');
+  const [secretAdminArmed, setSecretAdminArmed] = useState(false);
+  const [secretAdminGateOpen, setSecretAdminGateOpen] = useState(false);
+  const logoClickCountRef = useRef(0);
+  const logoClickTimerRef = useRef<number | null>(null);
   const [nowTick, setNowTick] = useState(() => Date.now());
   const [session, setSession] = useState<SessionPayload>(EMPTY_SESSION);
   const [stations, setStations] = useState<FuelStation[]>(UZBEKISTAN_STATIONS);
@@ -127,6 +131,8 @@ export default function App() {
   liveGpsActiveRef.current = liveGpsActive;
   const locationModeRef = useRef(locationMode);
   locationModeRef.current = locationMode;
+  const selectedCityRef = useRef<StationCityFilter>(selectedCity);
+  selectedCityRef.current = selectedCity;
 
   const stopLiveGps = useCallback(() => {
     if (watchIdRef.current !== null && typeof navigator !== 'undefined' && navigator.geolocation) {
@@ -149,11 +155,27 @@ export default function App() {
         return;
       }
       setGpsError(null);
+      const prevCity = selectedCityRef.current;
+      const anchorCity = prevCity === 'all' ? 'Ташкент' : prevCity;
+      const cityCenter = UZBEKISTAN_CITY_CENTERS[anchorCity];
+      const cityFallbackPoint: LatLngPoint = {
+        lat: cityCenter.lat,
+        lng: cityCenter.lng,
+        label:
+          anchorCity === 'Ташкент'
+            ? t.districtTashkentCenter
+            : localizeCity(anchorCity),
+        isLive: false,
+      };
+
       if (typeof navigator === 'undefined' || !navigator.geolocation) {
         setGeoPermission('unsupported');
-        setGpsError(t.gpsPermissionDenied);
+        setLocationMode('city');
+        setSelectedCity(prevCity);
         setLiveGpsActive(false);
         setLocatingGps(false);
+        setDriverLocation((prev) => (prev ? { ...prev, isLive: false } : cityFallbackPoint));
+        setGpsError(`${t.gpsPermissionDenied} ${t.geoFallbackCityNotice}`);
         return;
       }
 
@@ -209,30 +231,23 @@ export default function App() {
       const handleGeoError = (err: GeolocationPositionError) => {
         if (locationSeqRef.current !== seq) return;
         setLocatingGps(false);
-        const fallbackPoint: LatLngPoint = {
-          lat: UZBEKISTAN_CITY_CENTERS['Ташкент'].lat,
-          lng: UZBEKISTAN_CITY_CENTERS['Ташкент'].lng,
-          label: t.districtTashkentCenter,
-          isLive: false,
-        };
+        if (watchIdRef.current !== null) {
+          navigator.geolocation.clearWatch(watchIdRef.current);
+          watchIdRef.current = null;
+        }
+        setLiveGpsActive(false);
+        setLocationMode('city');
+        setSelectedCity(prevCity);
+        setDriverLocation((prev) =>
+          prev && !prev.isLive ? prev : cityFallbackPoint,
+        );
         if (err && err.code === 1) {
           setGeoPermission('denied');
-          setGpsError(t.locationBlockedHint);
-          if (watchIdRef.current !== null) {
-            navigator.geolocation.clearWatch(watchIdRef.current);
-            watchIdRef.current = null;
-          }
-          setLiveGpsActive(false);
-          setDriverLocation((prev) =>
-            prev
-              ? prev.isLive
-                ? { ...prev, isLive: false }
-                : prev
-              : fallbackPoint,
-          );
+          setGpsError(`${t.locationBlockedHint} ${t.geoFallbackCityNotice}`);
+        } else if (err?.code === 3) {
+          setGpsError(`${t.gpsSignalTimeout} ${t.geoFallbackCityNotice}`);
         } else {
-          setGpsError(err?.code === 3 ? t.gpsSignalTimeout : t.gpsSignalUnavailable);
-          setDriverLocation((prev) => prev ?? fallbackPoint);
+          setGpsError(`${t.gpsSignalUnavailable} ${t.geoFallbackCityNotice}`);
         }
       };
 
@@ -258,6 +273,9 @@ export default function App() {
     },
     [
       stopLiveGps,
+      localizeCity,
+      t.districtTashkentCenter,
+      t.geoFallbackCityNotice,
       t.gpsPermissionDenied,
       t.gpsSignalTimeout,
       t.gpsSignalUnavailable,
@@ -584,21 +602,60 @@ export default function App() {
     }
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (logoClickTimerRef.current !== null) {
+        window.clearTimeout(logoClickTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleLogoSecretTap = useCallback(() => {
+    if (logoClickTimerRef.current !== null) {
+      window.clearTimeout(logoClickTimerRef.current);
+      logoClickTimerRef.current = null;
+    }
+    const nextCount = logoClickCountRef.current + 1;
+    if (nextCount === 3) {
+      setActiveView('showcase');
+    }
+    if (nextCount >= 5) {
+      logoClickCountRef.current = 0;
+      setSecretAdminArmed(true);
+      return;
+    }
+    logoClickCountRef.current = nextCount;
+    logoClickTimerRef.current = window.setTimeout(() => {
+      logoClickCountRef.current = 0;
+      logoClickTimerRef.current = null;
+    }, 2500);
+  }, []);
+
   const handleLogout = useCallback(
-    async (targetMode: 'register' | 'login' | 'guest' | 'creator' = 'register') => {
+    async (targetMode?: 'register' | 'login' | 'guest' | 'creator') => {
       stopLiveGps();
+      const resolvedTarget: 'register' | 'login' | 'guest' | 'creator' =
+        targetMode ?? (secretAdminArmed ? 'creator' : 'register');
+      const openAdminScreen = resolvedTarget === 'creator';
       try {
         await logoutDriver();
       } catch {
         // Always complete client logout even if server call fails
       } finally {
+        logoClickCountRef.current = 0;
+        if (logoClickTimerRef.current !== null) {
+          window.clearTimeout(logoClickTimerRef.current);
+          logoClickTimerRef.current = null;
+        }
+        setSecretAdminArmed(false);
+        setSecretAdminGateOpen(openAdminScreen);
         setSession(EMPTY_SESSION);
-        setInitialGateMode(targetMode);
+        setInitialGateMode(resolvedTarget);
         setActiveView('fuel');
         setShowRouteMapOnFuel(false);
       }
     },
-    [stopLiveGps],
+    [stopLiveGps, secretAdminArmed],
   );
 
   const handleQuotaExceeded = useCallback(() => setQuotaExceeded(true), []);
@@ -669,7 +726,7 @@ export default function App() {
   const hasDriver =
     session.authenticated && canAccessApp(session.user) && Boolean(session.user);
 
-  // Strict Gate: Drivers must register & bind a card (or active <=3d Guest); Creator via Morzhowich88
+  // Strict Gate: Drivers must register & bind a card (or active <=3d Guest); Hidden admin via 5x logo + logout + code
   if (!hasDriver && !session.isCreator) {
     if (preAuthShowcaseOpen) {
       return (
@@ -678,13 +735,26 @@ export default function App() {
           onNavigateView={setActiveView}
           onStartDemoAtView={handleDemoJumpFromShowcase}
           onBackToGate={() => setPreAuthShowcaseOpen(false)}
+          onOpenSecretAdmin={() => {
+            setPreAuthShowcaseOpen(false);
+            setSecretAdminGateOpen(true);
+            setInitialGateMode('creator');
+          }}
         />
       );
     }
     return (
       <AuthCardGate
-        onSuccess={handleGateSuccess}
-        initialMode={initialGateMode}
+        onSuccess={(payload) => {
+          setSecretAdminGateOpen(false);
+          handleGateSuccess(payload);
+        }}
+        initialMode={secretAdminGateOpen ? 'creator' : initialGateMode}
+        secretAdminUnlocked={secretAdminGateOpen}
+        onExitSecretAdmin={() => {
+          setSecretAdminGateOpen(false);
+          setInitialGateMode('register');
+        }}
         guestExpiredNotice={guestExpiredBanner}
         onOpenShowcase={() => setPreAuthShowcaseOpen(true)}
       />
@@ -723,10 +793,35 @@ export default function App() {
         creatorRole={session.creatorRole}
         onSelectView={setActiveView}
         onSwitchCreatorRole={handleSwitchCreatorRole}
-        onLogout={() => handleLogout('register')}
+        onLogout={() => void handleLogout()}
+        onLogoTap={handleLogoSecretTap}
       />
 
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-8 sm:py-8">
+        {secretAdminArmed && (
+          <div
+            role="status"
+            data-testid="secret-admin-armed-toast"
+            className="dz-feedback-enter mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--dz-primary)]/40 bg-[var(--dz-surface-tint)] px-4 py-3 text-xs sm:text-sm font-semibold text-[var(--dz-ink)] shadow-sm"
+          >
+            <div className="flex items-center gap-2.5">
+              <KeyRound
+                className="h-4 w-4 shrink-0 text-[var(--dz-primary)]"
+                aria-hidden="true"
+              />
+              <span>{t.secretAdminActivatedToast}</span>
+            </div>
+            <button
+              type="button"
+              aria-label={t.hideForm}
+              onClick={() => setSecretAdminArmed(false)}
+              className="dz-focus flex h-7 w-7 items-center justify-center rounded-lg text-[var(--dz-ink-muted)] hover:bg-[var(--dz-surface)] hover:text-[var(--dz-ink)]"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        )}
+
         {session.isGuest && session.guestExpiresAt && !adminOnly && (
           <div
             data-testid="guest-mode-banner"
@@ -795,6 +890,7 @@ export default function App() {
               apiKey={mapsApiKey}
               stations={stations}
               selectedStationId={selectedStationId}
+              carModel={session.user?.carModel}
               driverLocation={driverLocation}
               locationMode={locationMode}
               selectedCity={selectedCity}
@@ -825,10 +921,14 @@ export default function App() {
             />
           )}
 
-          {!adminOnly && activeView === 'showcase' && (
+          {activeView === 'showcase' && (
             <ShowcaseView
               isAuthenticatedDemo
-              onNavigateView={setActiveView}
+              onNavigateView={(nextView) =>
+                setActiveView(
+                  adminOnly && nextView === 'fuel' ? 'creator' : nextView,
+                )
+              }
               onStartDemoAtView={handleDemoJumpFromShowcase}
             />
           )}

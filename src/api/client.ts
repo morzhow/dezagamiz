@@ -1,6 +1,7 @@
 import type {
   AccessRole,
   AssistantAction,
+  CreatorDemoEvent,
   CreatorOverview,
   FuelCode,
   FuelStation,
@@ -12,6 +13,8 @@ import type {
   PersonalCardTier,
   PersonalTrack,
   SessionPayload,
+  StationOperationalStatus,
+  StationQueueLevel,
 } from '../types/dezagamiz';
 
 const SESSION_KEY = 'dz_session_id';
@@ -395,6 +398,7 @@ export async function createFuelOrder(payload: {
   fuelCode: FuelCode;
   amountUzs: number;
   cardId: string;
+  bayCode?: string;
 }): Promise<SessionPayload> {
   return apiFetch<SessionPayload>('/api/orders', {
     method: 'POST',
@@ -460,10 +464,25 @@ export async function updateCreatorStation(
   data: {
     prices?: Partial<Record<FuelCode, number>>;
     bayAvailability?: Record<number, boolean>;
+    operationalStatus?: StationOperationalStatus;
+    queueLevel?: StationQueueLevel;
+    estimatedWaitMinutes?: number;
+    disabledFuels?: FuelCode[];
   },
 ): Promise<CreatorOverview> {
   return apiFetch<CreatorOverview>(`/api/creator/stations/${stationId}`, {
     method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function recordCreatorEvent(data: {
+  type: CreatorDemoEvent['type'];
+  title: string;
+  detail: string;
+}): Promise<CreatorOverview> {
+  return apiFetch<CreatorOverview>('/api/creator/events', {
+    method: 'POST',
     body: JSON.stringify(data),
   });
 }

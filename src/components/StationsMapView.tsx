@@ -286,8 +286,40 @@ function MapWorkspace({
   const placesLib = useMapsLibrary('places');
   const routesLib = useMapsLibrary('routes');
   const streetViewLib = useMapsLibrary('streetView');
+  const [gmAuthFailed, setGmAuthFailed] = useState(false);
+  const [loadTimeoutExpired, setLoadTimeoutExpired] = useState(false);
+
+  useEffect(() => {
+    const win = window as Window & { gm_authFailure?: () => void };
+    const prev = win.gm_authFailure;
+    win.gm_authFailure = () => {
+      setGmAuthFailed(true);
+      prev?.();
+    };
+    return () => {
+      win.gm_authFailure = prev;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      loadingStatus === APILoadingStatus.LOADED ||
+      loadingStatus === APILoadingStatus.FAILED ||
+      loadingStatus === APILoadingStatus.AUTH_FAILURE
+    ) {
+      setLoadTimeoutExpired(false);
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setLoadTimeoutExpired(true);
+    }, 3500);
+    return () => window.clearTimeout(timer);
+  }, [loadingStatus]);
+
   const isFallbackMode =
     apiLoadFailed ||
+    gmAuthFailed ||
+    loadTimeoutExpired ||
     loadingStatus === APILoadingStatus.FAILED ||
     loadingStatus === APILoadingStatus.AUTH_FAILURE;
 
@@ -1401,28 +1433,36 @@ function MapWorkspace({
         />
 
         {isFallbackMode ? (
-          <InteractiveFallbackMap
-            stations={stations}
-            driverLocation={driverLocation}
-            targetStationId={targetStationId}
-            selectedStationId={selectedStationId}
-            fuelFilter={fuelFilter}
-            lang={lang}
-            mapLayerMode={mapLayerMode}
-            showSatelliteLabels={showSatelliteLabels}
-            pegmanDragging={pegmanDragging}
-            compact={compact}
-            expanded={expanded}
-            onSelectStation={onSelectStation}
-            onChooseAndRefuel={onChooseAndRefuel}
-            onOpen360={(station) => void handleOpen360ForTarget(station)}
-            onViewportChange={(vp) => {
-              fallbackViewportRef.current = vp;
-            }}
-            onRouteComputed={onRouteComputed}
-            onRouteLoadingChange={onRouteLoadingChange}
-            onQuotaExceeded={onQuotaExceeded}
-          />
+          <>
+            <InteractiveFallbackMap
+              stations={stations}
+              driverLocation={driverLocation}
+              targetStationId={targetStationId}
+              selectedStationId={selectedStationId}
+              fuelFilter={fuelFilter}
+              lang={lang}
+              mapLayerMode={mapLayerMode}
+              showSatelliteLabels={showSatelliteLabels}
+              pegmanDragging={pegmanDragging}
+              compact={compact}
+              expanded={expanded}
+              onSelectStation={onSelectStation}
+              onChooseAndRefuel={onChooseAndRefuel}
+              onOpen360={(station) => void handleOpen360ForTarget(station)}
+              onViewportChange={(vp) => {
+                fallbackViewportRef.current = vp;
+              }}
+              onRouteComputed={onRouteComputed}
+              onRouteLoadingChange={onRouteLoadingChange}
+              onQuotaExceeded={onQuotaExceeded}
+            />
+            <div
+              data-testid="map-fallback-notice"
+              className="pointer-events-none absolute bottom-2 left-3 z-10 max-w-[70%] truncate rounded-lg border border-[var(--dz-border)] bg-[var(--dz-surface)]/90 px-2.5 py-1 text-[10px] font-medium text-[var(--dz-ink-secondary)] shadow-xs backdrop-blur-xs"
+            >
+              {t.mapFallbackActiveNote}
+            </div>
+          </>
         ) : (
           <>
             <GoogleMap
@@ -2109,6 +2149,12 @@ function NoKeyMapWorkspace(props: StationsMapViewProps) {
         onRouteLoadingChange={props.onRouteLoadingChange}
         onQuotaExceeded={props.onQuotaExceeded}
       />
+      <div
+        data-testid="map-fallback-notice"
+        className="pointer-events-none absolute bottom-2 left-3 z-10 max-w-[70%] truncate rounded-lg border border-[var(--dz-border)] bg-[var(--dz-surface)]/90 px-2.5 py-1 text-[10px] font-medium text-[var(--dz-ink-secondary)] shadow-xs backdrop-blur-xs"
+      >
+        {t.mapFallbackActiveNote}
+      </div>
 
       <PegmanMapWidget
         isHidden={Boolean(streetViewTarget)}

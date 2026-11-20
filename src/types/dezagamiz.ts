@@ -127,6 +127,10 @@ export interface NearbyPlaceItem {
   googleMapsURI?: string;
 }
 
+export type StationOperationalStatus = 'open' | 'busy' | 'maintenance';
+export type StationQueueLevel = 'low' | 'medium' | 'high';
+export type StationSortMode = 'nearest' | 'best_nearby';
+
 export interface FuelStation {
   id: string;
   name: string;
@@ -139,6 +143,10 @@ export interface FuelStation {
   formattedAddress?: string;
   distanceKm: number;
   isOpen24h: boolean;
+  operationalStatus?: StationOperationalStatus;
+  queueLevel?: StationQueueLevel;
+  estimatedWaitMinutes?: number;
+  disabledFuels?: FuelCode[];
   prices: Partial<Record<FuelCode, number>>;
   bays: StationBay[];
   attendants: AttendantInfo[];
@@ -149,6 +157,8 @@ export interface RankedStation extends FuelStation {
   supportsSelectedFuel: boolean;
   hasAvailableBayForFuel: boolean;
   freeBaysForFuel: number;
+  bestScore?: number;
+  vehicleCompatible?: boolean;
 }
 
 export interface FuelOrder {
@@ -214,6 +224,14 @@ export interface CreatorDriverSummary {
   createdAt: string;
 }
 
+export interface CreatorDemoEvent {
+  id: string;
+  timestamp: string;
+  type: 'order' | 'station_update' | 'safety_check' | 'security';
+  title: string;
+  detail: string;
+}
+
 export interface CreatorOverview {
   stats: {
     totalDrivers: number;
@@ -225,6 +243,7 @@ export interface CreatorOverview {
   drivers: CreatorDriverSummary[];
   orders: FuelOrder[];
   stations: FuelStation[];
+  events?: CreatorDemoEvent[];
 }
 
 export type MelodySynthPreset =

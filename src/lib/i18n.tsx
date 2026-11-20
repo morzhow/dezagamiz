@@ -606,6 +606,9 @@ export interface TranslationBundle {
   showcaseOutTotalBenefit: string;
   showcaseOutCo2Saved: string;
   showcaseOutTimeSaved: string;
+  unitKgShort: string;
+  unitHourShort: string;
+  unitMinShort: string;
   showcaseMonetizeTitle: string;
   showcaseMonetizeSubtitle: string;
   showcaseStationsCountLabel: string;
@@ -619,6 +622,58 @@ export interface TranslationBundle {
   showcaseChecklistTitle: string;
   showcaseChecklistSubtitle: string;
   showcaseChecklistProgress: string;
+  safetyMetanRule: string;
+  safetyStayInCarNote: string;
+  trackerExitForMetanHint: string;
+  carSupportedFuelsLabel: string;
+  carFuelAutoSelected: string;
+  carNoGboHybridWarn: string;
+  carEvOnlyWarn: string;
+  bayCodeTitle: string;
+  bayCodeLabel: string;
+  bayCodePlaceholder: string;
+  bayCodeAutofillBtn: string;
+  bayCodeScanQrBtn: string;
+  bayCodeScanningQr: string;
+  bayCodeVerifiedBadge: string;
+  bayCodeDemoHintPrefix: string;
+  errBayCodeMismatch: string;
+  compactLocationTitle: string;
+  howItWorksToggleOpen: string;
+  howItWorksToggleClose: string;
+  secretAdminActivatedToast: string;
+  secretAdminBackToDriverBtn: string;
+  sortNearestLabel: string;
+  sortBestNearbyLabel: string;
+  bestMatchBadge: string;
+  stationStatusOpen: string;
+  stationStatusBusy: string;
+  stationStatusMaint: string;
+  queueLowLabel: string;
+  queueMediumLabel: string;
+  queueHighLabel: string;
+  geoFallbackCityNotice: string;
+  mapFallbackActiveNote: string;
+  carMatchOk: string;
+  carMatchNo: string;
+  showcaseBackToApp: string;
+  creatorOperationalStatusLabel: string;
+  creatorQueueLevelLabel: string;
+  creatorFuelAvailabilityLabel: string;
+  creatorFuelOn: string;
+  creatorFuelOff: string;
+  creatorDemoEventsTitle: string;
+  creatorDemoEventsEmpty: string;
+  creatorSafetySandboxTitle: string;
+  creatorSafetySandboxSub: string;
+  creatorTestCarLabel: string;
+  creatorTestFuelLabel: string;
+  creatorTestBayLabel: string;
+  creatorTestCodeInputLabel: string;
+  creatorRunCheckBtn: string;
+  creatorCheckPassed: string;
+  creatorCheckBlockedCode: string;
+  creatorCheckBlockedFuel: string;
 }
 
 const RU: TranslationBundle = {
@@ -1210,6 +1265,9 @@ const RU: TranslationBundle = {
   showcaseOutTotalBenefit: 'Итоговая выгода семьи за год',
   showcaseOutCo2Saved: 'Меньше выбросов CO₂ в год',
   showcaseOutTimeSaved: 'Свободного времени без очередей',
+  unitKgShort: 'кг',
+  unitHourShort: 'ч',
+  unitMinShort: 'мин',
   showcaseMonetizeTitle: 'Как заработать на приложении уже сейчас',
   showcaseMonetizeSubtitle: '4 простых пути без банковских лицензий и сложных разрешений + живой расчёт дохода',
   showcaseStationsCountLabel: 'Подключённых частных АГНКС/АЗС',
@@ -1223,6 +1281,58 @@ const RU: TranslationBundle = {
   showcaseChecklistTitle: 'Чек-лист идеального показа на сцене',
   showcaseChecklistSubtitle: 'Отмечайте шаги во время выступления, чтобы ничего не забыть перед родителями и жюри',
   showcaseChecklistProgress: 'Выполнено шагов',
+  safetyMetanRule: 'Оплатите онлайн без очереди в кассу. Внимание: при заправке метаном по правилам ТБ необходимо выйти из салона и открыть капот.',
+  safetyStayInCarNote: 'Режим «Не выходя из машины» — ожидайте заправщика в салоне',
+  trackerExitForMetanHint: 'По правилам ТБ АГНКС при заправке метаном выйдите из салона и откройте капот',
+  carSupportedFuelsLabel: 'Подходит для авто',
+  carFuelAutoSelected: 'Подобран подходящий вид топлива для вашей модели',
+  carNoGboHybridWarn: 'Для данной модели (гибрид/бензин без ГБО) доступны только АИ-92 и АИ-95. Метан и Пропан не поддерживаются.',
+  carEvOnlyWarn: 'Выбран электромобиль: газовая и бензиновая заправка не подходят. Переключите авто в гараже или используйте ЭЗС.',
+  bayCodeTitle: 'Защита от оплаты чужой колонки',
+  bayCodeLabel: 'Код подтверждения с дисплея колонки',
+  bayCodePlaceholder: '4 цифры с экрана',
+  bayCodeAutofillBtn: 'Подставить демо-код',
+  bayCodeScanQrBtn: 'Сканировать QR на колонке',
+  bayCodeScanningQr: 'Сканируем QR колонки...',
+  bayCodeVerifiedBadge: 'Колонка подтверждена',
+  bayCodeDemoHintPrefix: 'На табло колонки сейчас',
+  errBayCodeMismatch: 'Введите верный 4-значный код с дисплея выбранной колонки или отсканируйте QR-код',
+  compactLocationTitle: 'Город и ближайшая АЗС',
+  howItWorksToggleOpen: 'Как это работает?',
+  howItWorksToggleClose: 'Скрыть подсказку',
+  secretAdminActivatedToast: 'Секретный вход администратора активирован. Нажмите «Выйти», чтобы открыть окно ввода кода администратора.',
+  secretAdminBackToDriverBtn: 'Вернуться ко входу водителя',
+  sortNearestLabel: 'Ближайшие',
+  sortBestNearbyLabel: 'Лучшие рядом',
+  bestMatchBadge: 'Лучшая рядом',
+  stationStatusOpen: 'Работает',
+  stationStatusBusy: 'Высокая нагрузка',
+  stationStatusMaint: 'Техобслуживание',
+  queueLowLabel: 'Без очереди',
+  queueMediumLabel: 'Средняя очередь',
+  queueHighLabel: 'Большая очередь',
+  geoFallbackCityNotice: 'Геолокация недоступна — расстояния рассчитаны от центра выбранного города',
+  mapFallbackActiveNote: 'Включена встроенная интерактивная схема станций',
+  carMatchOk: 'Подходит авто',
+  carMatchNo: 'Нет топлива для авто',
+  showcaseBackToApp: 'К заправке',
+  creatorOperationalStatusLabel: 'Статус работы станции',
+  creatorQueueLevelLabel: 'Загруженность и очередь',
+  creatorFuelAvailabilityLabel: 'Доступность видов топлива',
+  creatorFuelOn: 'Вкл',
+  creatorFuelOff: 'Выкл',
+  creatorDemoEventsTitle: 'Журнал событий и проверок',
+  creatorDemoEventsEmpty: 'Событий пока нет — измените статус станции или проверьте код колонки',
+  creatorSafetySandboxTitle: 'Проверка правил ТБ и кодов колонок',
+  creatorSafetySandboxSub: 'Покажите жюри и родителям, как приложение подбирает топливо по модели авто, включает ТБ ПБ АГНКС для метана и проверяет 4-значный код колонки',
+  creatorTestCarLabel: 'Тестовая модель авто',
+  creatorTestFuelLabel: 'Выбираемое топливо',
+  creatorTestBayLabel: 'Тестовая колонка',
+  creatorTestCodeInputLabel: 'Введённый код с экрана',
+  creatorRunCheckBtn: 'Проверить защиту и ТБ',
+  creatorCheckPassed: 'Разрешено: код колонки совпал, топливо совместимо с авто',
+  creatorCheckBlockedCode: 'Заблокировано: неверный код колонки (защита от чужой колонки)',
+  creatorCheckBlockedFuel: 'Предупреждение: топливо не поддерживается данной моделью авто',
 };
 
 const UZ: TranslationBundle = {
@@ -1813,6 +1923,9 @@ const UZ: TranslationBundle = {
   showcaseOutTotalBenefit: 'Oila uchun yillik jami foyda',
   showcaseOutCo2Saved: 'Yillik kamaytirilgan CO₂',
   showcaseOutTimeSaved: 'Navbatsiz tejalgan vaqt',
+  unitKgShort: 'kg',
+  unitHourShort: 'soat',
+  unitMinShort: 'daq',
   showcaseMonetizeTitle: 'Ilovadan hoziroq oddiy pul ishlash',
   showcaseMonetizeSubtitle: 'Bank litsenziyasisiz 4 ta oson yoʻl va jonli daromad hisobi',
   showcaseStationsCountLabel: 'Ulangan xususiy AGTKSh/AYoQShlar',
@@ -1826,6 +1939,58 @@ const UZ: TranslationBundle = {
   showcaseChecklistTitle: 'Sahnada ideal koʻrsatish rejasi',
   showcaseChecklistSubtitle: 'Chiqish davomida qadamlarni belgilab boring',
   showcaseChecklistProgress: 'Bajarilgan qadamlar',
+  safetyMetanRule: 'Kassaga navbatsiz onlayn toʻlang. Diqqat: metan quyishda xavfsizlik qoidalariga koʻra salondan chiqish va kapotni ochish shart.',
+  safetyStayInCarNote: '«Mashinadan chiqmasdan» rejimi — zapravkachini salonda kuting',
+  trackerExitForMetanHint: 'AGNXS xavfsizlik qoidalariga koʻra metan quyishda salondan chiqing va kapotni oching',
+  carSupportedFuelsLabel: 'Avto uchun mos yoqilgʻi',
+  carFuelAutoSelected: 'Avtomobilingiz modeli uchun mos yoqilgʻi tanlandi',
+  carNoGboHybridWarn: 'Ushbu model (GBOsiz gibrid/benzin) faqat AI-92 va AI-95 bilan ishlaydi. Metan va Propan qoʻllab-quvvatlanmaydi.',
+  carEvOnlyWarn: 'Elektromobil tanlangan: gaz va benzin quyish mos kelmaydi. Garajdan boshqa avtomobil tanlang yoki quvvatlash stansiyasidan foydalaning.',
+  bayCodeTitle: 'Boshqa kolonkaga adashib toʻlashdan himoya',
+  bayCodeLabel: 'Kolonka ekranidagi tasdiqlash kodi',
+  bayCodePlaceholder: 'Ekrandagi 4 ta raqam',
+  bayCodeAutofillBtn: 'Demo-kodni kiritish',
+  bayCodeScanQrBtn: 'Kolonkadagi QR ni skanerlash',
+  bayCodeScanningQr: 'Kolonka QR kodi skanerlanmoqda...',
+  bayCodeVerifiedBadge: 'Kolonka tasdiqlandi',
+  bayCodeDemoHintPrefix: 'Kolonka tablosidagi kod',
+  errBayCodeMismatch: 'Tanlangan kolonka ekranidagi toʻgʻri 4 xonali kodni kiriting yoki QR-kodni skanerlang',
+  compactLocationTitle: 'Shahar va eng yaqin AYoQSh',
+  howItWorksToggleOpen: 'Bu qanday ishlaydi?',
+  howItWorksToggleClose: 'Koʻrsatmani yashirish',
+  secretAdminActivatedToast: 'Maxfiy administrator kirishi faollashtirildi. Administrator kodini kiritish oynasini ochish uchun «Chiqish» tugmasini bosing.',
+  secretAdminBackToDriverBtn: 'Haydovchi kirishiga qaytish',
+  sortNearestLabel: 'Eng yaqin',
+  sortBestNearbyLabel: 'Eng yaxshi yaqin',
+  bestMatchBadge: 'Eng qulay',
+  stationStatusOpen: 'Ishlamoqda',
+  stationStatusBusy: 'Bandlik yuqori',
+  stationStatusMaint: 'Texnik xizmat',
+  queueLowLabel: 'Navbatsiz',
+  queueMediumLabel: 'Oʻrtacha navbat',
+  queueHighLabel: 'Katta navbat',
+  geoFallbackCityNotice: 'Geolokatsiya mavjud emas — masofalar tanlangan shahar markazidan hisoblandi',
+  mapFallbackActiveNote: 'Ichki interaktiv stansiyalar xaritasi faol',
+  carMatchOk: 'Avtoga mos',
+  carMatchNo: 'Mos yoqilgʻi yoʻq',
+  showcaseBackToApp: 'Zapravkaga qaytish',
+  creatorOperationalStatusLabel: 'Stansiya ish holati',
+  creatorQueueLevelLabel: 'Yuklama va navbat darajasi',
+  creatorFuelAvailabilityLabel: 'Yoqilgʻi turlari mavjudligi',
+  creatorFuelOn: 'Yoqilgan',
+  creatorFuelOff: 'Oʻchirilgan',
+  creatorDemoEventsTitle: 'Hodisalar va tekshiruvlar jurnali',
+  creatorDemoEventsEmpty: 'Hozircha hodisalar yoʻq — stansiya holatini oʻzgartiring yoki kolonka kodini tekshiring',
+  creatorSafetySandboxTitle: 'Xavfsizlik qoidalari va kolonka kodlarini tekshirish',
+  creatorSafetySandboxSub: 'Juri va ota-onalarga ilova avtomobil modeliga qarab yoqilgʻi tanlashi, metan uchun AGNXS xavfsizlik qoidasini koʻrsatishi va 4 xonali kolonka kodini tekshirishini namoyish eting',
+  creatorTestCarLabel: 'Sinov avtomobil modeli',
+  creatorTestFuelLabel: 'Tanlangan yoqilgʻi',
+  creatorTestBayLabel: 'Sinov kolonkasi',
+  creatorTestCodeInputLabel: 'Ekrandan kiritilgan kod',
+  creatorRunCheckBtn: 'Himoya va xavfsizlikni tekshirish',
+  creatorCheckPassed: 'Ruxsat etildi: kolonka kodi mos keldi, yoqilgʻi avtomobilga mos',
+  creatorCheckBlockedCode: 'Bloklandi: kolonka kodi notoʻgʻri (boshqa kolonkaga toʻlashdan himoya)',
+  creatorCheckBlockedFuel: 'Ogohlantirish: ushbu avtomobil modeli uchun bu yoqilgʻi mos emas',
 };
 
 const EN: TranslationBundle = {
@@ -2417,6 +2582,9 @@ const EN: TranslationBundle = {
   showcaseOutTotalBenefit: 'Total annual family benefit',
   showcaseOutCo2Saved: 'Annual CO₂ avoided',
   showcaseOutTimeSaved: 'Queue time saved/year',
+  unitKgShort: 'kg',
+  unitHourShort: 'h',
+  unitMinShort: 'min',
   showcaseMonetizeTitle: 'How to Monetize This App Right Now',
   showcaseMonetizeSubtitle: '4 simple paths without banking licenses + live revenue projection',
   showcaseStationsCountLabel: 'Partner private stations',
@@ -2430,6 +2598,58 @@ const EN: TranslationBundle = {
   showcaseChecklistTitle: 'Fail-Safe Live Stage Demo Checklist',
   showcaseChecklistSubtitle: 'Check off each key proof point live in front of parents and judges',
   showcaseChecklistProgress: 'Steps completed',
+  safetyMetanRule: 'Pay online and skip the cashier queue. Safety Notice (Uzbekistan CNG rules): you must exit the cabin and open the hood when refueling methane.',
+  safetyStayInCarNote: 'Stay-in-car mode — remain comfortably inside while the attendant refuels',
+  trackerExitForMetanHint: 'Per CNG safety rules, exit the cabin and keep the hood open during methane refueling',
+  carSupportedFuelsLabel: 'Supported for vehicle',
+  carFuelAutoSelected: 'Compatible fuel automatically selected for your car model',
+  carNoGboHybridWarn: 'This model (hybrid/petrol without CNG/LPG kit) only supports AI-92 and AI-95. Methane and Propane are not supported.',
+  carEvOnlyWarn: 'Electric vehicle selected: gas and petrol refueling are not compatible. Switch vehicle in Garage or use an EV charger.',
+  bayCodeTitle: 'Wrong-Pump Payment Protection',
+  bayCodeLabel: 'Confirmation code from pump display',
+  bayCodePlaceholder: '4 digits on screen',
+  bayCodeAutofillBtn: 'Fill demo code',
+  bayCodeScanQrBtn: 'Scan QR on pump',
+  bayCodeScanningQr: 'Scanning pump QR code...',
+  bayCodeVerifiedBadge: 'Pump bay verified',
+  bayCodeDemoHintPrefix: 'Current pump display code',
+  errBayCodeMismatch: 'Enter the matching 4-digit code from the selected pump display or scan its QR code',
+  compactLocationTitle: 'City & Nearest Station',
+  howItWorksToggleOpen: 'How does it work?',
+  howItWorksToggleClose: 'Hide guide',
+  secretAdminActivatedToast: 'Secret admin access armed. Click "Sign out" to open the administrator code screen.',
+  secretAdminBackToDriverBtn: 'Back to driver sign-in',
+  sortNearestLabel: 'Nearest',
+  sortBestNearbyLabel: 'Best nearby',
+  bestMatchBadge: 'Best pick',
+  stationStatusOpen: 'Open',
+  stationStatusBusy: 'High load',
+  stationStatusMaint: 'Maintenance',
+  queueLowLabel: 'No queue',
+  queueMediumLabel: 'Moderate queue',
+  queueHighLabel: 'Long queue',
+  geoFallbackCityNotice: 'Location unavailable — distances calculated from the selected city center',
+  mapFallbackActiveNote: 'Built-in interactive station map active',
+  carMatchOk: 'Fits vehicle',
+  carMatchNo: 'No matching fuel',
+  showcaseBackToApp: 'Back to fueling',
+  creatorOperationalStatusLabel: 'Station operational status',
+  creatorQueueLevelLabel: 'Queue & congestion level',
+  creatorFuelAvailabilityLabel: 'Fuel type availability',
+  creatorFuelOn: 'On',
+  creatorFuelOff: 'Off',
+  creatorDemoEventsTitle: 'Live events & security audit',
+  creatorDemoEventsEmpty: 'No events yet — update a station or run a safety/code check',
+  creatorSafetySandboxTitle: 'Safety Rules & Pump Code Verifier',
+  creatorSafetySandboxSub: 'Demonstrate vehicle fuel compatibility, Uzbekistan CNG safety rules, and 4-digit pump code validation live',
+  creatorTestCarLabel: 'Test vehicle model',
+  creatorTestFuelLabel: 'Selected fuel to test',
+  creatorTestBayLabel: 'Test pump bay',
+  creatorTestCodeInputLabel: 'Entered display code',
+  creatorRunCheckBtn: 'Run security & safety check',
+  creatorCheckPassed: 'Approved: pump display code matches & fuel fits vehicle',
+  creatorCheckBlockedCode: 'Blocked: wrong pump code (wrong-pump protection active)',
+  creatorCheckBlockedFuel: 'Warning: fuel not supported by selected vehicle model',
 };
 
 const KK: TranslationBundle = {
@@ -3020,6 +3240,9 @@ const KK: TranslationBundle = {
   showcaseOutTotalBenefit: 'Отбасының жылдық жалпы пайдасы',
   showcaseOutCo2Saved: 'Жылдық CO₂ азаюы',
   showcaseOutTimeSaved: 'Кезексіз үнемделген уақыт',
+  unitKgShort: 'кг',
+  unitHourShort: 'сағ',
+  unitMinShort: 'мин',
   showcaseMonetizeTitle: 'Қосымшадан қазір қалай ақша табуға болады',
   showcaseMonetizeSubtitle: 'Банк лицензиясынсыз 4 оңай жол және табыс есебі',
   showcaseStationsCountLabel: 'Қосылған жеке бекеттер саны',
@@ -3033,6 +3256,58 @@ const KK: TranslationBundle = {
   showcaseChecklistTitle: 'Сахнада мінсіз көрсету тізімі',
   showcaseChecklistSubtitle: 'Көрсетілім кезінде қадамдарды белгілеп отырыңыз',
   showcaseChecklistProgress: 'Орындалған қадам',
+  safetyMetanRule: 'Кассаға кезексіз онлайн төлеңіз. Назар аударыңыз: метан құю кезінде қауіпсіздік ережесі бойынша салоннан шығып, капотты ашу қажет.',
+  safetyStayInCarNote: '«Көліктен шықпай» режимі — құюшыны салон ішінде күтіңіз',
+  trackerExitForMetanHint: 'АГНҚС қауіпсіздік ережесі бойынша метан құю кезінде салоннан шығып, капотты ашыңыз',
+  carSupportedFuelsLabel: 'Көлікке үйлесімді отын',
+  carFuelAutoSelected: 'Көлік үлгіңізге сәйкес отын түрі автоматты таңдалды',
+  carNoGboHybridWarn: 'Бұл үлгі (ГБЖ-сыз гибрид/бензин) тек АИ-92 және АИ-95 қолдайды. Метан мен Пропан жарамайды.',
+  carEvOnlyWarn: 'Электромобиль таңдалған: газ және бензин құю жарамайды. Гараждан басқа көлік таңдаңыз немесе ЭЗС қолданыңыз.',
+  bayCodeTitle: 'Бөтен бағанға қате төлемнен қорғау',
+  bayCodeLabel: 'Баған экранындағы растау коды',
+  bayCodePlaceholder: 'Экрандағы 4 сан',
+  bayCodeAutofillBtn: 'Демо-кодты қою',
+  bayCodeScanQrBtn: 'Бағандағы QR кодты сканерлеу',
+  bayCodeScanningQr: 'Баған QR коды сканерленуде...',
+  bayCodeVerifiedBadge: 'Баған расталды',
+  bayCodeDemoHintPrefix: 'Баған таблосындағы код',
+  errBayCodeMismatch: 'Таңдалған баған экранындағы 4 таңбалы кодты енгізіңіз немесе QR-кодты сканерлеңіз',
+  compactLocationTitle: 'Қала және ең жақын бекет',
+  howItWorksToggleOpen: 'Бұл қалай жұмыс істейді?',
+  howItWorksToggleClose: 'Нұсқаулықты жасыру',
+  secretAdminActivatedToast: 'Құпия әкімші кіруі іске қосылды. Әкімші кодын енгізу терезесін ашу үшін «Шығу» түймесін басыңыз.',
+  secretAdminBackToDriverBtn: 'Жүргізуші кіруіне оралу',
+  sortNearestLabel: 'Ең жақын',
+  sortBestNearbyLabel: 'Жақындағы үздік',
+  bestMatchBadge: 'Үздік таңдау',
+  stationStatusOpen: 'Ашық',
+  stationStatusBusy: 'Жүктеме жоғары',
+  stationStatusMaint: 'Техникалық қызмет',
+  queueLowLabel: 'Кезексіз',
+  queueMediumLabel: 'Орташа кезек',
+  queueHighLabel: 'Ұзын кезек',
+  geoFallbackCityNotice: 'Геолокация қолжетімсіз — қашықтық таңдалған қала орталығынан есептелді',
+  mapFallbackActiveNote: 'Кіріктірілген интерактивті бекет картасы белсенді',
+  carMatchOk: 'Көлікке сай',
+  carMatchNo: 'Сәйкес отын жоқ',
+  showcaseBackToApp: 'Құюға оралу',
+  creatorOperationalStatusLabel: 'Бекеттің жұмыс мәртебесі',
+  creatorQueueLevelLabel: 'Жүктеме және кезек деңгейі',
+  creatorFuelAvailabilityLabel: 'Отын түрлерінің қолжетімділігі',
+  creatorFuelOn: 'Қосулы',
+  creatorFuelOff: 'Өшірулі',
+  creatorDemoEventsTitle: 'Оқиғалар мен тексерістер журналы',
+  creatorDemoEventsEmpty: 'Оқиғалар жоқ — бекет күйін өзгертіңіз немесе баған кодын тексеріңіз',
+  creatorSafetySandboxTitle: 'Қауіпсіздік ережелері мен баған кодтарын тексеру',
+  creatorSafetySandboxSub: 'Қазылар мен ата-аналарға көлік үлгісіне сай отын таңдауды, метанға арналған АГНҚС қауіпсіздік ережесін және 4 таңбалы кодты тексеруді көрсетіңіз',
+  creatorTestCarLabel: 'Сынақ көлік үлгісі',
+  creatorTestFuelLabel: 'Сыналатын отын түрі',
+  creatorTestBayLabel: 'Сынақ бағаны',
+  creatorTestCodeInputLabel: 'Енгізілген код',
+  creatorRunCheckBtn: 'Қорғаныс пен ҚЕ тексеру',
+  creatorCheckPassed: 'Рұқсат етілді: баған коды сәйкес, отын көлікке сай',
+  creatorCheckBlockedCode: 'Бұғатталды: баған коды қате (бөтен бағаннан қорғау)',
+  creatorCheckBlockedFuel: 'Ескерту: бұл отын таңдалған көлік үлгісіне жарамайды',
 };
 
 const TR: TranslationBundle = {
@@ -3623,6 +3898,9 @@ const TR: TranslationBundle = {
   showcaseOutTotalBenefit: 'Yıllık toplam aile kazancı',
   showcaseOutCo2Saved: 'Azaltılan yıllık CO₂',
   showcaseOutTimeSaved: 'Sıra beklemeden kazanılan süre',
+  unitKgShort: 'kg',
+  unitHourShort: 'sa',
+  unitMinShort: 'dk',
   showcaseMonetizeTitle: 'Bu Uygulamadan Şu An Nasıl Para Kazanılır',
   showcaseMonetizeSubtitle: 'Banka lisansı gerektirmeyen 4 basit yol ve canlı gelir tahmini',
   showcaseStationsCountLabel: 'Anlaşmalı özel istasyon sayısı',
@@ -3636,6 +3914,58 @@ const TR: TranslationBundle = {
   showcaseChecklistTitle: 'Kusursuz Sahne Gösterim Listesi',
   showcaseChecklistSubtitle: 'Veliler ve jüri önünde tüm önemli kanıtları sırayla işaretleyin',
   showcaseChecklistProgress: 'Tamamlanan adım',
+  safetyMetanRule: 'Kasada sıra beklemeden çevrimiçi ödeyin. Güvenlik Uyarısı (CNG kuralları): metan dolumunda kabinden çıkmanız ve kaputu açmanız gerekir.',
+  safetyStayInCarNote: '«Araçtan çıkmadan» modu — görevliyi kabin içinde bekleyebilirsiniz',
+  trackerExitForMetanHint: 'CNG güvenlik kuralları gereği metan dolumunda kabinden çıkın ve kaputu açık tutun',
+  carSupportedFuelsLabel: 'Araçla uyumlu yakıt',
+  carFuelAutoSelected: 'Aracınızın modeli için uygun yakıt otomatik seçildi',
+  carNoGboHybridWarn: 'Bu model (LPG/CNG kiti olmayan hibrit/benzin) yalnızca AI-92 ve AI-95 destekler. Metan ve Propan uygun değildir.',
+  carEvOnlyWarn: 'Elektrikli araç seçili: gaz ve benzin dolumu uygun değil. Garajdan başka araç seçin veya şarj istasyonu kullanın.',
+  bayCodeTitle: 'Yanlış Pompaya Ödeme Koruması',
+  bayCodeLabel: 'Pompa ekranındaki onay kodu',
+  bayCodePlaceholder: 'Ekrandaki 4 hane',
+  bayCodeAutofillBtn: 'Demo kodu doldur',
+  bayCodeScanQrBtn: "Pompadaki QR'ı tara",
+  bayCodeScanningQr: 'Pompa QR kodu taranıyor...',
+  bayCodeVerifiedBadge: 'Pompa doğrulandı',
+  bayCodeDemoHintPrefix: 'Pompa ekranındaki kod',
+  errBayCodeMismatch: 'Seçili pompa ekranındaki 4 haneli kodu girin veya pompadaki QR kodu tarayın',
+  compactLocationTitle: 'Şehir ve En Yakın İstasyon',
+  howItWorksToggleOpen: 'Nasıl çalışır?',
+  howItWorksToggleClose: 'Rehberi gizle',
+  secretAdminActivatedToast: 'Gizli yönetici erişimi etkinleştirildi. Yönetici kodu ekranını açmak için «Çıkış» düğmesine basın.',
+  secretAdminBackToDriverBtn: 'Sürücü girişine dön',
+  sortNearestLabel: 'En Yakın',
+  sortBestNearbyLabel: 'Yakındaki En İyiler',
+  bestMatchBadge: 'En İyi Seçim',
+  stationStatusOpen: 'Açık',
+  stationStatusBusy: 'Yoğun',
+  stationStatusMaint: 'Bakımda',
+  queueLowLabel: 'Sıra yok',
+  queueMediumLabel: 'Orta sıra',
+  queueHighLabel: 'Uzun sıra',
+  geoFallbackCityNotice: 'Konum kullanılamıyor — mesafeler seçili şehir merkezinden hesaplandı',
+  mapFallbackActiveNote: 'Dahili etkileşimli istasyon haritası etkin',
+  carMatchOk: 'Araca uygun',
+  carMatchNo: 'Uygun yakıt yok',
+  showcaseBackToApp: 'Doluma dön',
+  creatorOperationalStatusLabel: 'İstasyon çalışma durumu',
+  creatorQueueLevelLabel: 'Yoğunluk ve sıra durumu',
+  creatorFuelAvailabilityLabel: 'Yakıt türü erişilebilirliği',
+  creatorFuelOn: 'Açık',
+  creatorFuelOff: 'Kapalı',
+  creatorDemoEventsTitle: 'Canlı olaylar ve güvenlik günlüğü',
+  creatorDemoEventsEmpty: 'Henüz olay yok — bir istasyonu güncelleyin veya pompa kodu testi yapın',
+  creatorSafetySandboxTitle: 'Güvenlik Kuralları ve Pompa Kodu Doğrulayıcı',
+  creatorSafetySandboxSub: 'Jüri ve velilere araç yakıt uyumu, CNG güvenlik kuralı tetikleyicisi ve 4 haneli pompa kodu doğrulamasını canlı gösterin',
+  creatorTestCarLabel: 'Test araç modeli',
+  creatorTestFuelLabel: 'Test edilecek yakıt',
+  creatorTestBayLabel: 'Test pompası',
+  creatorTestCodeInputLabel: 'Girilen ekran kodu',
+  creatorRunCheckBtn: 'Güvenlik ve kural kontrolünü çalıştır',
+  creatorCheckPassed: 'Onaylandı: pompa kodu eşleşti ve yakıt araca uygun',
+  creatorCheckBlockedCode: 'Engellendi: yanlış pompa kodu (yanlış pompaya ödeme koruması)',
+  creatorCheckBlockedFuel: 'Uyarı: bu yakıt seçili araç modeli tarafından desteklenmiyor',
 };
 
 export const TRANSLATIONS: Record<AppLanguage, TranslationBundle> = {

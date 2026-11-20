@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -44,9 +44,10 @@ interface ShowcaseViewProps {
   onNavigateView: (view: AppView) => void;
   onStartDemoAtView: (view: AppView) => Promise<void>;
   onBackToGate?: () => void;
+  onOpenSecretAdmin?: () => void;
 }
 
-const SLIDE_IMAGES = [heroStationImg, cockpitImg, appIconImg, attendantImg] as const;
+const SLIDE_IMAGES = [heroStationImg, cockpitImg, appIconImg, attendantImg, heroStationImg] as const;
 
 function formatStopwatch(totalSec: number): string {
   const safe = Math.max(0, Math.floor(totalSec));
@@ -60,9 +61,40 @@ export function ShowcaseView({
   onNavigateView,
   onStartDemoAtView,
   onBackToGate,
+  onOpenSecretAdmin,
 }: ShowcaseViewProps) {
   const { t, lang, formatMoney } = useI18n();
   const content = useMemo(() => getShowcaseContent(lang), [lang]);
+
+  const logoTapCountRef = useRef(0);
+  const logoTapTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (logoTapTimerRef.current !== null) {
+        window.clearTimeout(logoTapTimerRef.current);
+      }
+    };
+  }, []);
+
+  function handlePreAuthLogoTap() {
+    if (!onOpenSecretAdmin) return;
+    if (logoTapTimerRef.current !== null) {
+      window.clearTimeout(logoTapTimerRef.current);
+      logoTapTimerRef.current = null;
+    }
+    const next = logoTapCountRef.current + 1;
+    if (next >= 5) {
+      logoTapCountRef.current = 0;
+      onOpenSecretAdmin();
+      return;
+    }
+    logoTapCountRef.current = next;
+    logoTapTimerRef.current = window.setTimeout(() => {
+      logoTapCountRef.current = 0;
+      logoTapTimerRef.current = null;
+    }, 2500);
+  }
 
   const [activeTab, setActiveTab] = useState<ShowcaseTab>('slides');
   const [projectorCleanMode, setProjectorCleanMode] = useState(false);
@@ -190,7 +222,14 @@ export function ShowcaseView({
         <header className="sticky top-0 z-30 border-b border-[var(--dz-border)] bg-[var(--dz-surface)]/95 backdrop-blur-md">
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-8">
             <div className="flex items-center gap-3">
-              <BrandLogo />
+              <button
+                type="button"
+                data-testid="showcase-brand-logo-trigger"
+                onClick={handlePreAuthLogoTap}
+                className="dz-focus select-none rounded-lg text-left"
+              >
+                <BrandLogo />
+              </button>
               {onBackToGate && (
                 <button
                   type="button"
@@ -225,6 +264,19 @@ export function ShowcaseView({
         <section className="rounded-3xl border border-[var(--dz-border)] bg-[var(--dz-surface)] p-5 shadow-[var(--dz-shadow-sm)] sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-1">
+              {isAuthenticatedDemo && (
+                <div className="mb-2">
+                  <button
+                    type="button"
+                    data-testid="showcase-back-to-app-btn"
+                    onClick={() => onNavigateView('fuel')}
+                    className="dz-focus inline-flex items-center gap-1.5 rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface-subtle)] px-3 py-1.5 text-xs font-semibold text-[var(--dz-ink)] hover:border-[var(--dz-primary)] hover:text-[var(--dz-primary)]"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>{t.showcaseBackToApp}</span>
+                  </button>
+                </div>
+              )}
               <h1 className="font-display text-2xl font-bold tracking-tight text-[var(--dz-ink)] sm:text-3xl">
                 {t.showcaseTitle}
               </h1>
@@ -437,7 +489,7 @@ export function ShowcaseView({
             <div className="flex flex-col justify-between overflow-hidden rounded-3xl border border-[var(--dz-border)] bg-[var(--dz-primary-deep)] text-white lg:col-span-5">
               <div className="relative h-72 w-full overflow-hidden bg-[#082452] sm:h-80">
                 <img
-                  src={SLIDE_IMAGES[slideIndex] || heroStationImg}
+                  src={SLIDE_IMAGES[slideIndex % SLIDE_IMAGES.length] || heroStationImg}
                   alt={currentSlide.title}
                   className="h-full w-full object-cover"
                 />
@@ -466,6 +518,10 @@ export function ShowcaseView({
                       type="button"
                       onClick={() => setSlideIndex(idx)}
                       className={`dz-focus rounded-xl border px-3 py-2.5 text-left text-xs font-semibold transition-all ${
+                        idx === content.slides.length - 1 && content.slides.length % 2 === 1
+                          ? 'col-span-2'
+                          : ''
+                      } ${
                         idx === slideIndex
                           ? 'border-white bg-white text-[#092C63]'
                           : 'border-white/20 bg-white/10 text-blue-100 hover:bg-white/15'
@@ -757,7 +813,7 @@ export function ShowcaseView({
                   {t.showcaseOutCo2Saved}
                 </div>
                 <div className="mt-1 font-mono-tabular text-xl font-bold text-[var(--dz-success)]">
-                  ~{savings.yearlyCo2SavedKg} kg
+                  ~{savings.yearlyCo2SavedKg} {t.unitKgShort}
                 </div>
               </div>
 
@@ -766,7 +822,7 @@ export function ShowcaseView({
                   {t.showcaseOutTimeSaved}
                 </div>
                 <div className="mt-1 font-mono-tabular text-xl font-bold text-[var(--dz-ink)]">
-                  ~{Math.round(savings.yearlyQueueMinutesSaved / 60)} h ({savings.yearlyQueueMinutesSaved} min)
+                  ~{Math.round(savings.yearlyQueueMinutesSaved / 60)} {t.unitHourShort} ({savings.yearlyQueueMinutesSaved} {t.unitMinShort})
                 </div>
               </div>
             </div>

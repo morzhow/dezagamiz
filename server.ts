@@ -19,6 +19,7 @@ import {
   calculateFuelVolume,
   calculatePersonalCardCashback,
   canAccessApp,
+  computeBayDisplayCode,
   computeGuestExpiresAt,
   decodeEncodedPolyline,
   FUEL_META,
@@ -32,6 +33,7 @@ import {
   normalizeDigits,
   normalizeUzbekPlate,
   PERSONAL_CARD_CASHBACK_RATE,
+  isFuelEnabledOnStation,
   validateCardExpiry,
   validateCardNumber,
   validatePersonalCardTopUp,
@@ -41,6 +43,7 @@ import {
 } from './src/lib/dezagamiz';
 import type {
   AccessRole,
+  CreatorDemoEvent,
   CreatorOverview,
   DezagamizPersonalCard,
   DriverUser,
@@ -55,11 +58,17 @@ import type {
   PersonalCardStyle,
   PersonalCardTier,
   PersonalTrack,
+  StationOperationalStatus,
+  StationQueueLevel,
 } from './src/types/dezagamiz';
 
 interface StationOverride {
   prices?: Partial<Record<FuelCode, number>>;
   bayAvailability?: Record<number, boolean>;
+  operationalStatus?: StationOperationalStatus;
+  queueLevel?: StationQueueLevel;
+  estimatedWaitMinutes?: number;
+  disabledFuels?: FuelCode[];
 }
 
 interface DbState {
@@ -70,6 +79,7 @@ interface DbState {
   guestSessions: Record<string, string>; // sessionId -> deviceToken
   stationOverrides: Record<string, StationOverride>;
   orders: FuelOrder[];
+  events?: CreatorDemoEvent[];
   musicTracks: Record<string, PersonalTrack[]>;
   musicPrefs: Record<string, MusicPreferences>;
 }
@@ -105,6 +115,7 @@ function loadDb(): DbState {
               : {},
           stationOverrides: parsed.stationOverrides || {},
           orders: parsed.orders,
+          events: Array.isArray(parsed.events) ? parsed.events : [],
           musicTracks:
             parsed.musicTracks && typeof parsed.musicTracks === 'object'
               ? parsed.musicTracks
@@ -127,6 +138,7 @@ function loadDb(): DbState {
     guestSessions: {},
     stationOverrides: {},
     orders: [],
+    events: [],
     musicTracks: {},
     musicPrefs: {},
   };
@@ -205,17 +217,44 @@ function clearSessionCookie(res: express.Response): void {
   );
 }
 
+function recordDemoEvent(
+  db: DbState,
+  type: CreatorDemoEvent['type'],
+  title: string,
+  detail: string,
+): void {
+  const list = Array.isArray(db.events) ? db.events : [];
+  list.unshift({
+    id: `evt-${crypto.randomUUID().slice(0, 8)}`,
+    timestamp: new Date().toISOString(),
+    type,
+    title,
+    detail,
+  });
+  db.events = list.slice(0, 40);
+}
+
 function getLiveStations(db: DbState): FuelStation[] {
   return UZBEKISTAN_STATIONS.map((station) => {
     const override = db.stationOverrides[station.id];
     if (!override) return station;
+    const isMaint = override.operationalStatus === 'maintenance';
     return {
       ...station,
+      operationalStatus: override.operationalStatus || 'open',
+      queueLevel: override.queueLevel,
+      estimatedWaitMinutes: override.estimatedWaitMinutes,
+      disabledFuels: Array.isArray(override.disabledFuels)
+        ? override.disabledFuels
+        : [],
       prices: {
         ...station.prices,
         ...(override.prices || {}),
       },
       bays: station.bays.map((bay) => {
+        if (isMaint) {
+          return { ...bay, available: false };
+        }
         if (
           override.bayAvailability &&
           typeof override.bayAvailability[bay.number] === 'boolean'
@@ -265,6 +304,7 @@ function buildCreatorOverview(db: DbState): CreatorOverview {
     }),
     orders: sortedOrders,
     stations: getLiveStations(db),
+    events: db.events || [],
   };
 }
 
@@ -662,7 +702,7 @@ async function startServer() {
     return res.json({ ok: true });
   });
 
-  // Creator unlock using secret code Morzhowich88
+  // Creator unlock using secret code MorzhowichKittisiwich88
   app.post('/api/creator/unlock', (req, res) => {
     const code = typeof req.body?.code === 'string' ? req.body.code : '';
     const requestedRole: AccessRole =
@@ -760,7 +800,14 @@ async function startServer() {
     }
 
     const existing = db.stationOverrides[station.id] || {};
-    const { prices, bayAvailability } = req.body ?? {};
+    const {
+      prices,
+      bayAvailability,
+      operationalStatus,
+      queueLevel,
+      estimatedWaitMinutes,
+      disabledFuels,
+    } = req.body ?? {};
     const nextPrices: Partial<Record<FuelCode, number>> = { ...(existing.prices || {}) };
     if (prices && typeof prices === 'object') {
       for (const key of ['metan', 'propan', 'ai92', 'ai95'] as FuelCode[]) {
@@ -781,11 +828,72 @@ async function startServer() {
       }
     }
 
+    const nextStatus: StationOperationalStatus =
+      operationalStatus === 'open' ||
+      operationalStatus === 'busy' ||
+      operationalStatus === 'maintenance'
+        ? operationalStatus
+        : existing.operationalStatus || 'open';
+
+    const nextQueue: StationQueueLevel | undefined =
+      queueLevel === 'low' || queueLevel === 'medium' || queueLevel === 'high'
+        ? queueLevel
+        : existing.queueLevel;
+
+    const nextWait =
+      typeof estimatedWaitMinutes === 'number' &&
+      Number.isFinite(estimatedWaitMinutes) &&
+      estimatedWaitMinutes >= 0 &&
+      estimatedWaitMinutes <= 120
+        ? Math.round(estimatedWaitMinutes)
+        : existing.estimatedWaitMinutes;
+
+    const nextDisabledFuels: FuelCode[] = Array.isArray(disabledFuels)
+      ? (disabledFuels.filter((f): f is FuelCode =>
+          ['metan', 'propan', 'ai92', 'ai95'].includes(String(f)),
+        ))
+      : existing.disabledFuels || [];
+
     db.stationOverrides[station.id] = {
       prices: nextPrices,
       bayAvailability: nextBays,
+      operationalStatus: nextStatus,
+      queueLevel: nextQueue,
+      estimatedWaitMinutes: nextWait,
+      disabledFuels: nextDisabledFuels,
     };
+
+    recordDemoEvent(
+      db,
+      'station_update',
+      station.name,
+      `Статус: ${nextStatus}, очередь: ${nextQueue || 'auto'}, отключено топливо: ${
+        nextDisabledFuels.length > 0 ? nextDisabledFuels.join(', ') : 'нет'
+      }`,
+    );
+
     saveDb(db);
+    return res.json(buildCreatorOverview(db));
+  });
+
+  app.post('/api/creator/events', (req, res) => {
+    const auth = requireCreator(req, res);
+    if (!auth) return;
+    const { db } = auth;
+    const { type, title, detail } = req.body ?? {};
+    const safeType: CreatorDemoEvent['type'] =
+      type === 'safety_check' || type === 'security' || type === 'station_update'
+        ? type
+        : 'safety_check';
+    if (typeof title === 'string' && title.trim()) {
+      recordDemoEvent(
+        db,
+        safeType,
+        title.trim().slice(0, 120),
+        typeof detail === 'string' ? detail.trim().slice(0, 260) : '',
+      );
+      saveDb(db);
+    }
     return res.json(buildCreatorOverview(db));
   });
 
@@ -810,6 +918,12 @@ async function startServer() {
       order.dispensedVolume = order.targetVolume;
       order.completedAt = order.updatedAt;
     }
+    recordDemoEvent(
+      db,
+      'order',
+      `${order.receiptCode} · ${next}`,
+      `${order.stationName} · колонка №${order.bayNumber}`,
+    );
     saveDb(db);
     return res.json(buildCreatorOverview(db));
   });
@@ -1932,19 +2046,41 @@ async function startServer() {
       });
     }
 
-    const { stationId, bayNumber, fuelCode, amountUzs, cardId } = req.body ?? {};
+    const { stationId, bayNumber, fuelCode, amountUzs, cardId, bayCode } = req.body ?? {};
     const liveStations = getLiveStations(db);
     const station = liveStations.find((s) => s.id === stationId);
     if (!station) {
       return res.status(400).json({ error: 'Выберите станцию dezagamiz' });
     }
+    if (station.operationalStatus === 'maintenance') {
+      return res.status(400).json({ error: 'Выбранная станция сейчас на техобслуживании' });
+    }
     const bay = station.bays.find((b) => b.number === Number(bayNumber));
     if (!bay || !bay.available) {
       return res.status(400).json({ error: 'Выбранная колонка сейчас занята' });
     }
+    if (typeof bayCode === 'string') {
+      const expectedCode = computeBayDisplayCode(station.id, bay.number);
+      if (bayCode.trim() !== expectedCode) {
+        recordDemoEvent(
+          db,
+          'security',
+          station.name,
+          `Заблокирован неверный код колонки №${bay.number} (${user.plateNumber})`,
+        );
+        saveDb(db);
+        return res.status(400).json({
+          error: 'Код подтверждения с дисплея колонки не совпадает. Проверьте номер колонки.',
+        });
+      }
+    }
     const fuelKey = fuelCode as FuelCode;
     const pricePerUnit = station.prices[fuelKey];
-    if (!pricePerUnit || !bay.supportedFuels.includes(fuelKey)) {
+    if (
+      !pricePerUnit ||
+      !isFuelEnabledOnStation(station, fuelKey) ||
+      !bay.supportedFuels.includes(fuelKey)
+    ) {
       return res.status(400).json({ error: 'Этот вид топлива недоступен на выбранной колонке' });
     }
 
@@ -2034,6 +2170,12 @@ async function startServer() {
     };
 
     db.orders.push(order);
+    recordDemoEvent(
+      db,
+      'order',
+      `${order.receiptCode} · ${order.fuelLabel}`,
+      `${station.name} · №${bay.number} · ${order.amountUzs} сум (${user.plateNumber})`,
+    );
     saveDb(db);
     return res.status(201).json(buildSessionPayload(db, user, auth.sessionId));
   });

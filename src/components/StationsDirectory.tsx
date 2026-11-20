@@ -24,7 +24,9 @@ import {
   formatLocationAge,
   formatRouteDuration,
   formatSpeedKmh,
-  rankStationsByProximity,
+  getEffectiveQueueLevel,
+  isFuelEnabledOnStation,
+  rankStationsWithMode,
   STATION_CITIES,
 } from '../lib/dezagamiz';
 import { useI18n } from '../lib/i18n';
@@ -36,6 +38,7 @@ import type {
   LocationSourceMode,
   StationCity,
   StationCityFilter,
+  StationSortMode,
 } from '../types/dezagamiz';
 import {
   StationsMapView,
@@ -46,6 +49,7 @@ interface StationsDirectoryProps {
   apiKey: string;
   stations: FuelStation[];
   selectedStationId: string;
+  carModel?: string | null;
   driverLocation: LatLngPoint | null;
   locationMode: LocationSourceMode;
   selectedCity: StationCityFilter;
@@ -137,6 +141,7 @@ export function StationsDirectory({
   apiKey,
   stations,
   selectedStationId,
+  carModel = null,
   driverLocation,
   locationMode,
   selectedCity,
@@ -165,6 +170,7 @@ export function StationsDirectory({
     localizeStationAddress,
     localizeAttendantName,
   } = useI18n();
+  const [sortMode, setSortMode] = useState<StationSortMode>('best_nearby');
   const [presetBusyId, setPresetBusyId] = useState<string | null>(null);
   const [locationNotice, setLocationNotice] = useState<string | null>(null);
   const [mapExpanded, setMapExpanded] = useState(false);
@@ -196,20 +202,34 @@ export function StationsDirectory({
     [stations, selectedCity],
   );
 
-  // Rank stations by proximity and selected fuel support
+  // Rank stations by nearest proximity or "Best Nearby" (status, queue, vehicle fuel fit, distance)
   const rankedStations = useMemo(
-    () => rankStationsByProximity(driverLocation, cityFiltered, fuelFilter),
-    [driverLocation, cityFiltered, fuelFilter],
+    () =>
+      rankStationsWithMode(
+        driverLocation,
+        cityFiltered,
+        fuelFilter,
+        sortMode,
+        carModel,
+      ),
+    [driverLocation, cityFiltered, fuelFilter, sortMode, carModel],
   );
 
   const recommendedNearest = useMemo(
-    () => findNearestStationForFuel(driverLocation, cityFiltered, fuelFilter),
-    [driverLocation, cityFiltered, fuelFilter],
+    () =>
+      findNearestStationForFuel(
+        driverLocation,
+        cityFiltered,
+        fuelFilter,
+        sortMode,
+        carModel,
+      ),
+    [driverLocation, cityFiltered, fuelFilter, sortMode, carModel],
   );
 
-  // Sync route target to nearest station when filter/city/mode changes, while respecting manual picks across live GPS ticks
+  // Sync route target to nearest/best station when filter/sort/city/mode changes, while respecting manual picks across live GPS ticks
   useEffect(() => {
-    const autoResetKey = `${fuelFilter}|${selectedCity}|${locationMode}`;
+    const autoResetKey = `${fuelFilter}|${sortMode}|${selectedCity}|${locationMode}`;
     if (lastAutoResetKeyRef.current !== autoResetKey) {
       lastAutoResetKeyRef.current = autoResetKey;
       manualRouteTargetRef.current = false;
@@ -421,6 +441,44 @@ export function StationsDirectory({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            {/* Sort Mode: Best Nearby vs Nearest */}
+            <div
+              role="group"
+              aria-label={t.sortBestNearbyLabel}
+              className="flex items-center gap-1 rounded-xl border border-[var(--dz-border)] bg-[var(--dz-bg)] p-1"
+            >
+              <button
+                type="button"
+                data-testid="sort-mode-best_nearby"
+                onClick={() => {
+                  manualRouteTargetRef.current = false;
+                  setSortMode('best_nearby');
+                }}
+                className={`dz-focus rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors whitespace-nowrap ${
+                  sortMode === 'best_nearby'
+                    ? 'dz-dark-active-glow bg-[var(--dz-primary)] text-white'
+                    : 'text-[var(--dz-ink-secondary)] hover:text-[var(--dz-ink)]'
+                }`}
+              >
+                {t.sortBestNearbyLabel}
+              </button>
+              <button
+                type="button"
+                data-testid="sort-mode-nearest"
+                onClick={() => {
+                  manualRouteTargetRef.current = false;
+                  setSortMode('nearest');
+                }}
+                className={`dz-focus rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors whitespace-nowrap ${
+                  sortMode === 'nearest'
+                    ? 'dz-dark-active-glow bg-[var(--dz-primary)] text-white'
+                    : 'text-[var(--dz-ink-secondary)] hover:text-[var(--dz-ink)]'
+                }`}
+              >
+                {t.sortNearestLabel}
+              </button>
+            </div>
+
             {geoPermission === 'granted' && (
               <span className="inline-flex items-center gap-1 rounded-lg bg-[#E9F7EF] dark:bg-[#0D2B22] px-2.5 py-1 text-[11px] font-semibold text-[#0A7E42] dark:text-[#34D399]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#0A7E42] dark:bg-[#34D399]" />
@@ -622,9 +680,11 @@ export function StationsDirectory({
                   <span className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--dz-surface-tint)] px-3 py-1 text-xs font-bold text-[var(--dz-primary)]">
                     <Navigation className="h-3.5 w-3.5" aria-hidden="true" />
                     <span>
-                      {fuelFilter === 'all'
-                        ? t.nearestRouteTitle
-                        : `${t.nearestFuelBadge} ${fuelShortLabel(fuelFilter)}`}
+                      {sortMode === 'best_nearby'
+                        ? t.bestMatchBadge
+                        : fuelFilter === 'all'
+                          ? t.nearestRouteTitle
+                          : `${t.nearestFuelBadge} ${fuelShortLabel(fuelFilter)}`}
                     </span>
                   </span>
                   <span className="text-xs font-semibold text-[var(--dz-success)]">
@@ -824,9 +884,12 @@ export function StationsDirectory({
         {rankedStations.map((station, idx) => {
           const isNearest =
             idx === 0 &&
-            (fuelFilter === 'all' || station.supportsSelectedFuel);
+            (fuelFilter === 'all' || station.supportsSelectedFuel) &&
+            station.operationalStatus !== 'maintenance';
           const isTarget = station.id === routeTargetStationId;
           const isSelected = station.id === selectedStationId;
+          const isMaintenance = station.operationalStatus === 'maintenance';
+          const queueLevel = getEffectiveQueueLevel(station);
           const hasCoords =
             typeof station.lat === 'number' && typeof station.lng === 'number';
           const distLabel =
@@ -834,13 +897,32 @@ export function StationsDirectory({
               ? `${station.straightDistanceKm} ${t.distanceKmUnit}`
               : `${station.distanceKm} ${t.distanceKmUnit}`;
 
+          const statusLabel =
+            station.operationalStatus === 'maintenance'
+              ? t.stationStatusMaint
+              : station.operationalStatus === 'busy'
+                ? t.stationStatusBusy
+                : t.stationStatusOpen;
+          const statusStyle =
+            station.operationalStatus === 'maintenance'
+              ? 'bg-[var(--dz-danger-bg)] text-[var(--dz-danger)]'
+              : station.operationalStatus === 'busy'
+                ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
+                : 'bg-[#E9F7EF] dark:bg-[#0D2B22] text-[#0A7E42] dark:text-[#34D399]';
+          const queueLabel =
+            queueLevel === 'high'
+              ? t.queueHighLabel
+              : queueLevel === 'medium'
+                ? t.queueMediumLabel
+                : t.queueLowLabel;
+
           return (
             <article
               key={station.id}
               data-testid={`station-card-${station.id}`}
               className={`dz-card-hover flex flex-col justify-between rounded-3xl border bg-[var(--dz-surface)] p-6 shadow-[var(--dz-shadow-sm)] ${
-                !station.supportsSelectedFuel && fuelFilter !== 'all'
-                  ? 'border-[var(--dz-border)] opacity-60'
+                isMaintenance || (!station.supportsSelectedFuel && fuelFilter !== 'all')
+                  ? 'border-[var(--dz-border)] opacity-70'
                   : isTarget
                     ? 'border-[#0A7E42] dark:border-[#34D399]/70 ring-1 ring-[#0A7E42]/20 dark:ring-[#34D399]/25'
                     : isSelected
@@ -850,21 +932,44 @@ export function StationsDirectory({
             >
               <div>
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                  <span className="font-semibold text-[var(--dz-ink-muted)]">
+                  <span className="font-mono-tabular font-semibold text-[var(--dz-ink-muted)]">
                     #{idx + 1} · {localizeCity(station.city)} · {distLabel}
                   </span>
                   {isNearest ? (
                     <span className="rounded-lg bg-[#E9F7EF] dark:bg-[#0D2B22] px-2 py-0.5 font-bold text-[#0A7E42] dark:text-[#34D399]">
-                      {t.nearestStationRank}
+                      {sortMode === 'best_nearby' ? t.bestMatchBadge : t.nearestStationRank}
                     </span>
                   ) : (
-                    <span className="font-semibold text-[var(--dz-success)]">
+                    <span className="font-mono-tabular font-semibold text-[var(--dz-success)]">
                       {t.freeBaysCount}: {station.freeBaysForFuel}/{station.bays.length}
                     </span>
                   )}
                 </div>
 
-                <h2 className="mt-2 font-display text-lg font-bold text-[var(--dz-ink)]">
+                {/* Operational status, queue level & car match metadata */}
+                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold">
+                  <span className={`rounded-lg px-2 py-0.5 ${statusStyle}`}>
+                    {statusLabel}
+                  </span>
+                  {!isMaintenance && (
+                    <span className="rounded-lg bg-[var(--dz-surface-subtle)] px-2 py-0.5 text-[var(--dz-ink-secondary)]">
+                      {queueLabel}
+                    </span>
+                  )}
+                  {carModel && (
+                    <span
+                      className={`rounded-lg px-2 py-0.5 ${
+                        station.vehicleCompatible
+                          ? 'bg-[var(--dz-surface-tint)] text-[var(--dz-primary)]'
+                          : 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
+                      }`}
+                    >
+                      {station.vehicleCompatible ? t.carMatchOk : t.carMatchNo}
+                    </span>
+                  )}
+                </div>
+
+                <h2 className="mt-2.5 font-display text-lg font-bold text-[var(--dz-ink)]">
                   {localizeStationName(station.id, station.name)}
                 </h2>
 
@@ -902,14 +1007,17 @@ export function StationsDirectory({
                     (code) => {
                       const price = station.prices[code];
                       if (!price) return null;
-                      const highlighted = fuelFilter === code;
+                      const fuelEnabled = isFuelEnabledOnStation(station, code);
+                      const highlighted = fuelFilter === code && fuelEnabled;
                       return (
                         <div
                           key={code}
                           className={`flex items-center justify-between py-2 text-xs ${
-                            highlighted
-                              ? 'font-bold text-[var(--dz-primary)]'
-                              : ''
+                            !fuelEnabled
+                              ? 'opacity-45 line-through'
+                              : highlighted
+                                ? 'font-bold text-[var(--dz-primary)]'
+                                : ''
                           }`}
                         >
                           <span
@@ -922,7 +1030,9 @@ export function StationsDirectory({
                             {fuelShortLabel(code)}
                           </span>
                           <span className="font-mono-tabular font-bold">
-                            {formatMoney(price)} / {fuelUnit(code)}
+                            {fuelEnabled
+                              ? `${formatMoney(price)} / ${fuelUnit(code)}`
+                              : t.creatorFuelOff}
                           </span>
                         </div>
                       );
@@ -931,11 +1041,11 @@ export function StationsDirectory({
                 </div>
               </div>
 
-              <div className="mt-5 flex gap-2">
+              <div className="mt-5 flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => handleFocusStationRoute(station.id)}
-                  className={`dz-focus flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border px-3.5 text-xs font-semibold transition-colors ${
+                  className={`dz-focus flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl border px-3 text-xs font-semibold transition-colors ${
                     isTarget
                       ? 'border-[#0A7E42] dark:border-[#1E6B50] bg-[#E9F7EF] dark:bg-[#0D2B22] text-[#0A7E42] dark:text-[#34D399]'
                       : 'border-[var(--dz-border)] bg-[var(--dz-surface)] text-[var(--dz-ink)] hover:border-[var(--dz-primary)]'
@@ -945,8 +1055,26 @@ export function StationsDirectory({
                   <span>{t.routeDistanceLabel}</span>
                 </button>
 
+                {hasCoords && (
+                  <a
+                    href={buildGoogleMapsDirectionsUrl(driverLocation, {
+                      lat: station.lat as number,
+                      lng: station.lng as number,
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${t.openGoogleMapsBtn}: ${localizeStationName(station.id, station.name)}`}
+                    title={t.openGoogleMapsBtn}
+                    className="dz-focus flex h-10 shrink-0 items-center justify-center gap-1 rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-2.5 text-xs font-semibold text-[var(--dz-ink)] transition-colors hover:border-[var(--dz-primary)] hover:text-[var(--dz-primary)]"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span className="sr-only sm:not-sr-only">Maps</span>
+                  </a>
+                )}
+
                 <button
                   type="button"
+                  disabled={isMaintenance}
                   onClick={() =>
                     onChooseStation(
                       station.id,
@@ -955,7 +1083,7 @@ export function StationsDirectory({
                         : undefined,
                     )
                   }
-                  className={`dz-focus flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-colors ${
+                  className={`dz-focus flex h-10 min-w-[120px] flex-1 items-center justify-center gap-1.5 rounded-xl text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm ${
                     isSelected
                       ? 'bg-[var(--dz-surface-tint)] text-[var(--dz-primary)] hover:bg-[#D8E7FE] dark:hover:bg-[#1E3B6B]'
                       : 'bg-[var(--dz-primary)] text-white hover:bg-[var(--dz-primary-hover)]'

@@ -25,10 +25,12 @@ import {
   updatePersonalCardDesign,
 } from '../api/client';
 import {
+  CAR_MODEL_SUGGESTIONS,
   detectCardNetwork,
   formatCardNumberInput,
   formatExpiryInput,
   getDriverVehicles,
+  getVehicleFuelProfile,
   normalizeUzbekPlate,
   PERSONAL_CARD_CASHBACK_RATE,
   validateCardExpiry,
@@ -1042,12 +1044,28 @@ export function ProfileAndCards({
               <input
                 id="new-car-model"
                 type="text"
+                list="profile-car-models"
                 required
                 value={newCarModel}
-                onChange={(e) => setNewCarModel(e.target.value)}
-                placeholder="BYD Song Plus / Kia K5"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setNewCarModel(val);
+                  const prof = getVehicleFuelProfile(val);
+                  if (
+                    !prof.supportsGas &&
+                    (newCarFuel === 'metan' || newCarFuel === 'propan')
+                  ) {
+                    setNewCarFuel(prof.recommendedFuel);
+                  }
+                }}
+                placeholder="BYD Song Plus / Chevrolet Cobalt"
                 className="dz-focus mt-1 h-10 w-full rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-3 text-sm text-[var(--dz-ink)]"
               />
+              <datalist id="profile-car-models">
+                {CAR_MODEL_SUGGESTIONS.map((m) => (
+                  <option key={m} value={m} />
+                ))}
+              </datalist>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -1077,7 +1095,21 @@ export function ProfileAndCards({
                 <select
                   id="new-car-fuel"
                   value={newCarFuel}
-                  onChange={(e) => setNewCarFuel(e.target.value as FuelCode)}
+                  onChange={(e) => {
+                    const nextFuel = e.target.value as FuelCode;
+                    const prof = getVehicleFuelProfile(newCarModel);
+                    if (prof.powertrain === 'ev_only') {
+                      setProfileErr(t.carEvOnlyWarn);
+                      return;
+                    }
+                    if (!prof.supportsGas && (nextFuel === 'metan' || nextFuel === 'propan')) {
+                      setProfileErr(t.carNoGboHybridWarn);
+                      setNewCarFuel(prof.recommendedFuel);
+                      return;
+                    }
+                    setProfileErr(null);
+                    setNewCarFuel(nextFuel);
+                  }}
                   className="dz-focus mt-1 h-10 w-full rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-3 text-sm font-medium text-[var(--dz-ink)]"
                 >
                   {(['metan', 'propan', 'ai92', 'ai95'] as FuelCode[]).map((code) => (
@@ -1202,11 +1234,20 @@ export function ProfileAndCards({
             <input
               id="prof-car"
               type="text"
+              list="profile-car-models"
               required
               value={carModel}
               onChange={(e) => {
+                const nextCar = e.target.value;
                 setProfileDirty(true);
-                setCarModel(e.target.value);
+                setCarModel(nextCar);
+                const prof = getVehicleFuelProfile(nextCar);
+                if (
+                  !prof.supportsGas &&
+                  (preferredFuel === 'metan' || preferredFuel === 'propan')
+                ) {
+                  setPreferredFuel(prof.recommendedFuel);
+                }
               }}
               className="dz-focus mt-1 h-11 w-full rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-3.5 text-sm text-[var(--dz-ink)]"
             />
@@ -1239,7 +1280,21 @@ export function ProfileAndCards({
             <select
               id="prof-fuel"
               value={preferredFuel}
-              onChange={(e) => setPreferredFuel(e.target.value as FuelCode)}
+              onChange={(e) => {
+                const nextFuel = e.target.value as FuelCode;
+                const prof = getVehicleFuelProfile(carModel);
+                if (prof.powertrain === 'ev_only') {
+                  setProfileErr(t.carEvOnlyWarn);
+                  return;
+                }
+                if (!prof.supportsGas && (nextFuel === 'metan' || nextFuel === 'propan')) {
+                  setProfileErr(t.carNoGboHybridWarn);
+                  setPreferredFuel(prof.recommendedFuel);
+                  return;
+                }
+                setProfileErr(null);
+                setPreferredFuel(nextFuel);
+              }}
               className="dz-focus mt-1 h-11 w-full rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-3.5 text-sm font-medium text-[var(--dz-ink)]"
             >
               {(['metan', 'propan', 'ai92', 'ai95'] as FuelCode[]).map((code) => (

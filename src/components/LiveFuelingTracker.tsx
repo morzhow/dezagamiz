@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  AlertTriangle,
   CheckCircle2,
   Clock,
   Footprints,
@@ -346,11 +347,25 @@ export function LiveFuelingTracker({
           {order.stage !== 'completed' ? (
             <>
               <div className="flex items-center gap-2 text-xs text-[var(--dz-ink-secondary)]">
-                <ShieldCheck
-                  className="h-4 w-4 text-[var(--dz-primary)]"
-                  aria-hidden="true"
-                />
-                <span>{t.trackerStayInsideHint}</span>
+                {order.fuelCode === 'metan' ? (
+                  <>
+                    <AlertTriangle
+                      className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400"
+                      aria-hidden="true"
+                    />
+                    <span className="font-semibold text-amber-900 dark:text-amber-200">
+                      {t.trackerExitForMetanHint}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck
+                      className="h-4 w-4 shrink-0 text-[var(--dz-primary)]"
+                      aria-hidden="true"
+                    />
+                    <span>{t.trackerStayInsideHint}</span>
+                  </>
+                )}
               </div>
               <button
                 type="button"

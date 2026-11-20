@@ -7,7 +7,6 @@ import {
   KeyRound,
   LogOut,
   MapPin,
-  Presentation,
   SlidersHorizontal,
   User,
 } from 'lucide-react';
@@ -24,6 +23,7 @@ interface TopNavProps {
   onSelectView: (view: AppView) => void;
   onSwitchCreatorRole: (role: AccessRole) => void;
   onLogout: () => void;
+  onLogoTap?: () => void;
 }
 
 export function TopNav({
@@ -33,6 +33,7 @@ export function TopNav({
   onSelectView,
   onSwitchCreatorRole,
   onLogout,
+  onLogoTap,
 }: TopNavProps) {
   const { t } = useI18n();
   const isAdminView = isCreator && creatorRole === 'admin';
@@ -41,7 +42,6 @@ export function TopNav({
     { id: 'fuel', label: t.navFuel, mobileLabel: t.navFuel },
     { id: 'stations', label: t.navStations, mobileLabel: t.navStations },
     { id: 'assistant', label: t.navAssistant, mobileLabel: t.navAssistant },
-    { id: 'showcase', label: t.navShowcase, mobileLabel: t.navShowcaseShort },
     { id: 'history', label: t.navHistory, mobileLabel: t.navHistory },
     { id: 'profile', label: t.navCards, mobileLabel: t.navCardsShort },
   ];
@@ -51,27 +51,21 @@ export function TopNav({
     { id: 'stations', label: t.navStations, mobileLabel: t.navStations },
   ];
 
-  const navItems = isAdminView
-    ? adminNavItems
-    : isCreator
-      ? driverNavItems
-      : [
-          ...driverNavItems,
-          { id: 'creator' as AppView, label: t.navCreator, mobileLabel: t.navCreator },
-        ];
+  const navItems = isAdminView ? adminNavItems : driverNavItems;
 
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-[var(--dz-border)] bg-[var(--dz-surface)]/95 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-4 sm:h-16 sm:px-8">
-          {/* Zone 1: Brand wordmark + app icon */}
+          {/* Zone 1: Brand wordmark + app icon (3 clicks open Showcase, 5 clicks arm hidden Admin entry) */}
           <a
             href={isAdminView ? '#creator' : '#fuel'}
+            data-testid="brand-logo-trigger"
             onClick={(e) => {
               e.preventDefault();
-              onSelectView(isAdminView ? 'creator' : 'fuel');
+              onLogoTap?.();
             }}
-            className="dz-focus rounded-lg whitespace-nowrap shrink-0"
+            className="dz-focus select-none rounded-lg whitespace-nowrap shrink-0"
           >
             <BrandLogo />
           </a>
@@ -162,13 +156,11 @@ export function TopNav({
                 ? MapPin
                 : item.id === 'assistant'
                   ? Bot
-                  : item.id === 'showcase'
-                    ? Presentation
-                    : item.id === 'history'
-                      ? History
-                      : item.id === 'creator'
-                        ? KeyRound
-                        : CreditCard;
+                  : item.id === 'history'
+                    ? History
+                    : item.id === 'creator'
+                      ? KeyRound
+                      : CreditCard;
           return (
             <button
               key={item.id}

@@ -15,6 +15,7 @@ import {
   computeFitBoundsViewport,
   formatCoordinates,
   formatSpeedKmh,
+  getEffectiveQueueLevel,
   latLngToWorldPoint,
   shouldRefreshOrigin,
   worldPointToLatLng,
@@ -543,6 +544,29 @@ export function InteractiveFallbackMap({
       role="region"
       aria-label={t.liveRouteModeTitle}
     >
+      {/* Vector Architectural Grid Backdrop (guarantees crisp canvas offline/slow tiles) */}
+      <svg
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 h-full w-full opacity-40"
+      >
+        <defs>
+          <pattern
+            id="dz-fallback-grid"
+            width="48"
+            height="48"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M 48 0 L 0 0 0 48"
+              fill="none"
+              stroke={isDark ? '#1E3A68' : '#C3D4EC'}
+              strokeWidth="1"
+            />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#dz-fallback-grid)" />
+      </svg>
+
       {/* Slippy Map Tiles Layer */}
       <div
         className={`pointer-events-none absolute inset-0 transition-[filter] duration-300 ${
@@ -714,12 +738,18 @@ export function InteractiveFallbackMap({
         }
         const isTarget = station.id === targetStationId;
         const isSelected = station.id === selectedStationId;
+        const isMaint = station.operationalStatus === 'maintenance';
+        const isBusy = station.operationalStatus === 'busy';
         const matches = station.supportsSelectedFuel;
-        const bgClass = isTarget
-          ? 'bg-[#0A7E42] scale-110 ring-4 ring-[#0A7E42]/25'
-          : matches || isSelected
-            ? 'bg-[#0B57D0] ring-2 ring-[#0B57D0]/20'
-            : 'bg-[#64748B]';
+        const bgClass = isMaint
+          ? 'bg-[#64748B] opacity-75'
+          : isTarget
+            ? 'bg-[#0A7E42] scale-110 ring-4 ring-[#0A7E42]/25'
+            : isBusy
+              ? 'bg-[#D97706] ring-2 ring-[#D97706]/30'
+              : matches || isSelected
+                ? 'bg-[#0B57D0] ring-2 ring-[#0B57D0]/20'
+                : 'bg-[#64748B]';
 
         return (
           <button
@@ -748,7 +778,7 @@ export function InteractiveFallbackMap({
                   className="pointer-events-none absolute -inset-2 animate-pulse rounded-full border-2 border-[#38BDF8] bg-[#38BDF8]/25"
                 />
               )}
-              <span className="relative">{isTarget ? '★' : '⛽'}</span>
+              <span className="relative">{isMaint ? '!' : isTarget ? '★' : '⛽'}</span>
             </span>
             <span className="mx-auto block h-1.5 w-1.5 -translate-y-0.5 rotate-45 bg-white shadow-sm" />
           </button>
@@ -759,7 +789,7 @@ export function InteractiveFallbackMap({
       {popupStation && (
         <div
           data-testid="fallback-station-popup"
-          className="dz-panel-enter absolute bottom-3 left-3 right-3 z-30 max-w-xs rounded-2xl border border-[var(--dz-border)] bg-[var(--dz-surface)] p-3.5 shadow-[var(--dz-shadow-card)] sm:right-auto"
+          className="dz-panel-enter absolute bottom-8 left-3 right-3 z-30 max-w-xs rounded-2xl border border-[var(--dz-border)] bg-[var(--dz-surface)] p-3.5 shadow-[var(--dz-shadow-card)] sm:right-auto"
         >
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
@@ -781,6 +811,36 @@ export function InteractiveFallbackMap({
             </button>
           </div>
 
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[10px] font-semibold">
+            <span
+              className={`rounded-md px-1.5 py-0.5 ${
+                popupStation.operationalStatus === 'maintenance'
+                  ? 'bg-[var(--dz-danger-bg)] text-[var(--dz-danger)]'
+                  : popupStation.operationalStatus === 'busy'
+                    ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
+                    : 'bg-[#E9F7EF] dark:bg-[#0D2B22] text-[#0A7E42] dark:text-[#34D399]'
+              }`}
+            >
+              {popupStation.operationalStatus === 'maintenance'
+                ? t.stationStatusMaint
+                : popupStation.operationalStatus === 'busy'
+                  ? t.stationStatusBusy
+                  : t.stationStatusOpen}
+            </span>
+            {popupStation.operationalStatus !== 'maintenance' && (
+              <span className="rounded-md bg-[var(--dz-surface-subtle)] px-1.5 py-0.5 text-[var(--dz-ink-secondary)]">
+                {(() => {
+                  const q = getEffectiveQueueLevel(popupStation);
+                  return q === 'high'
+                    ? t.queueHighLabel
+                    : q === 'medium'
+                      ? t.queueMediumLabel
+                      : t.queueLowLabel;
+                })()}
+              </span>
+            )}
+          </div>
+
           <div className="mt-2 flex items-center justify-between gap-2 text-[11px]">
             <span className="font-mono-tabular text-[var(--dz-ink-muted)]">
               {formatCoordinates(popupStation.lat, popupStation.lng)}
@@ -794,20 +854,36 @@ export function InteractiveFallbackMap({
             )}
           </div>
 
-          <div className="mt-2.5 flex items-center gap-2">
+          <div className="mt-2.5 flex items-center gap-1.5">
             <button
               type="button"
+              disabled={popupStation.operationalStatus === 'maintenance'}
               onClick={() =>
                 onChooseAndRefuel(
                   popupStation.id,
                   fuelFilter !== 'all' ? fuelFilter : undefined,
                 )
               }
-              className="dz-focus inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--dz-primary)] px-3 py-2 text-xs font-semibold text-white hover:bg-[var(--dz-primary-hover)]"
+              className="dz-focus inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--dz-primary)] px-2.5 py-2 text-xs font-semibold text-white hover:bg-[var(--dz-primary-hover)] disabled:opacity-50"
             >
               <Navigation className="h-3.5 w-3.5" aria-hidden="true" />
               <span>{t.refuelHereBtn}</span>
             </button>
+            {typeof popupStation.lat === 'number' && typeof popupStation.lng === 'number' && (
+              <a
+                href={buildGoogleMapsDirectionsUrl(driverLocation, {
+                  lat: popupStation.lat,
+                  lng: popupStation.lng,
+                })}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={t.openGoogleMapsBtn}
+                aria-label={t.openGoogleMapsBtn}
+                className="dz-focus inline-flex items-center justify-center rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-2.5 py-2 text-xs font-semibold text-[var(--dz-ink)] hover:border-[var(--dz-primary)] hover:text-[var(--dz-primary)]"
+              >
+                <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
+            )}
             {onOpen360 && (
               <button
                 type="button"

@@ -128,10 +128,11 @@ test('Entry gate enforces both registration and at least one linked card', () =>
   assert.equal(canAccessApp({ ...verifiedUser, isRegistered: false }), false);
 });
 
-test('Creator access code verification strictly requires Morzhowich88', () => {
-  assert.equal(verifyCreatorCode('Morzhowich88'), true);
-  assert.equal(verifyCreatorCode(' Morzhowich88 '), true);
-  assert.equal(verifyCreatorCode('morzhowich88'), false);
+test('Creator access code verification strictly requires MorzhowichKittisiwich88', () => {
+  assert.equal(verifyCreatorCode('MorzhowichKittisiwich88'), true);
+  assert.equal(verifyCreatorCode(' MorzhowichKittisiwich88 '), true);
+  assert.equal(verifyCreatorCode('Morzhowich88'), false);
+  assert.equal(verifyCreatorCode('morzhowichkittisiwich88'), false);
   assert.equal(verifyCreatorCode('Morzhowich'), false);
   assert.equal(verifyCreatorCode(''), false);
 });
@@ -139,6 +140,7 @@ test('Creator access code verification strictly requires Morzhowich88', () => {
 import {
   buildGoogleMapsDirectionsUrl,
   classifyNearbyPlaceCategory,
+  computeBayDisplayCode,
   computeGuestExpiresAt,
   findNearestStationForFuel,
   formatCoordinates,
@@ -149,6 +151,7 @@ import {
   getGuestRemainingMs,
   getIndexedSlideDirection,
   getPageSlideDirection,
+  getVehicleFuelProfile,
   GATE_MODE_ORDER,
   GUEST_DURATION_MS,
   GUEST_MAX_DAYS,
@@ -821,11 +824,86 @@ test('Showcase presentation content, calculators, view order, and 4th upgraded m
 
   for (const lang of SUPPORTED_LANGUAGES) {
     const content = getShowcaseContent(lang.code);
-    assert.equal(content.slides.length, 4);
+    assert.equal(content.slides.length, 5);
     assert.equal(content.qaItems.length, 8);
     assert.equal(content.checklist.length, 5);
     assert.equal(content.monetizationPaths.length, 4);
   }
 });
+
+test('Vehicle fuel compatibility profiles bind car models and flag hybrids/EVs without GBO', () => {
+  const bydSong = getVehicleFuelProfile('BYD Song Plus');
+  assert.equal(bydSong.powertrain, 'hybrid_petrol');
+  assert.equal(bydSong.supportsGas, false);
+  assert.deepEqual(bydSong.supportedFuels, ['ai92', 'ai95']);
+  assert.equal(bydSong.recommendedFuel, 'ai95');
+
+  const lacetti = getVehicleFuelProfile('Chevrolet Lacetti');
+  assert.equal(lacetti.powertrain, 'ice_gbo_ready');
+  assert.equal(lacetti.supportsGas, true);
+  assert.deepEqual(lacetti.supportedFuels, ['metan', 'propan', 'ai92']);
+
+  const cobalt = getVehicleFuelProfile('Chevrolet Cobalt');
+  assert.equal(cobalt.supportsGas, true);
+  assert.deepEqual(cobalt.supportedFuels, ['metan', 'propan', 'ai92']);
+
+  const tesla = getVehicleFuelProfile('Tesla Model 3');
+  assert.equal(tesla.powertrain, 'ev_only');
+  assert.equal(tesla.supportsGas, false);
+  assert.deepEqual(tesla.supportedFuels, []);
+
+  const zeekr = getVehicleFuelProfile('Zeekr 001');
+  assert.equal(zeekr.powertrain, 'ev_only');
+  assert.equal(zeekr.supportsGas, false);
+
+  const customGbo = getVehicleFuelProfile('BYD Song Plus (ГБО)');
+  assert.equal(customGbo.supportsGas, true);
+});
+
+test('Pump bay display confirmation codes are deterministic 4-digit codes per station and bay', () => {
+  const code1 = computeBayDisplayCode('st-tashkent-chilonzor', 1);
+  const code1Repeat = computeBayDisplayCode('st-tashkent-chilonzor', 1);
+  const code2 = computeBayDisplayCode('st-tashkent-chilonzor', 2);
+  const otherStation = computeBayDisplayCode('st-samarkand-registan', 1);
+
+  assert.match(code1, /^\d{4}$/);
+  assert.equal(code1, code1Repeat);
+  assert.notEqual(code1, code2);
+  assert.notEqual(code1, otherStation);
+});
+
+import {
+  getEffectiveQueueLevel,
+  isFuelEnabledOnStation,
+  rankStationsBestNearby,
+} from './dezagamiz';
+
+test('Best Nearby station ranking respects operational status, disabled fuels, queue load, and car compatibility', () => {
+  const sample = UZBEKISTAN_STATIONS.slice(0, 3).map((st, idx) => ({
+    ...st,
+    operationalStatus: idx === 0 ? ('maintenance' as const) : ('open' as const),
+    queueLevel: idx === 1 ? ('low' as const) : ('high' as const),
+    disabledFuels: idx === 2 ? (['metan'] as ('metan')[]) : [],
+  }));
+
+  assert.equal(isFuelEnabledOnStation(sample[2], 'metan'), false);
+  assert.equal(isFuelEnabledOnStation(sample[1], 'metan'), true);
+  assert.equal(getEffectiveQueueLevel(sample[1]), 'low');
+
+  const ranked = rankStationsBestNearby(
+    { lat: 41.2995, lng: 69.2401 },
+    sample,
+    'metan',
+    'Chevrolet Cobalt',
+  );
+
+  // Station 1 is open with low queue & methane enabled -> should outrank Station 0 (maintenance) and Station 2 (methane disabled)
+  assert.equal(ranked[0].id, sample[1].id);
+  assert.equal(ranked[0].vehicleCompatible, true);
+  assert.equal(ranked[ranked.length - 1].operationalStatus, 'maintenance');
+  assert.equal(ranked[ranked.length - 1].freeBaysForFuel, 0);
+});
+
+
 
 

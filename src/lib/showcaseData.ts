@@ -225,6 +225,24 @@ const CONTENT_BY_LANG: Record<AppLanguage, ShowcaseLocalizedContent> = {
         proofView: 'profile',
         proofLabel: 'Показать карты и кэшбэк',
       },
+      {
+        id: 'safety',
+        indexLabel: '05',
+        title: 'Безопасность ПБ АГНКС, авто-подбор и защита колонки',
+        summary:
+          'dezagamiz учитывает закон РУз по технике безопасности: при метане требует выйти и открыть капот, при бензине/пропане оставляет режим «Не выходя», подбирает топливо по модели авто и защищает от оплаты чужой колонки 4-значным кодом/QR.',
+        bulletPoints: [
+          'Подбор по авто: BYD Song Plus (АИ-92/95), Cobalt/Lacetti (Метан/Пропан/АИ-92), предупреждение для электрокаров.',
+          'Защита от ошибки колонки: сверка 4-значного кода с дисплея или QR-сканирование прямо у бокса.',
+          'Умная геолокация + «Лучшие рядом» и резервная схема карты при отсутствии ключа или офлайн-режиме.',
+        ],
+        speakerNote:
+          'Покажи перед жюри: выбери Метан (появится жёлтая плашка ТБ РУз), потом Пропан (зелёная «Не выходя из машины») и введи код с колонки!',
+        keyMetricValue: '4-значный QR',
+        keyMetricLabel: 'защита от оплаты чужой колонки + ПБ АГНКС',
+        proofView: 'fuel',
+        proofLabel: 'Проверить защиту колонки',
+      },
     ],
     qaItems: [
       {
@@ -453,6 +471,24 @@ const CONTENT_BY_LANG: Record<AppLanguage, ShowcaseLocalizedContent> = {
         keyMetricLabel: 'birinchi barqaror oylik daromad uchun yetarli',
         proofView: 'profile',
         proofLabel: "Kartalar va keshbekni ko'rsatish",
+      },
+      {
+        id: 'safety',
+        indexLabel: '05',
+        title: 'AGTKSh xavfsizlik qoidalari va kolonka himoyasi',
+        summary:
+          "dezagamiz O'zbekiston texnika xavfsizligi qoidalarini avtomatik bajaradi: metanda kapotni ochish eslatmasi, benzin/propanda «Mashinadan chiqmasdan» rejimi, avtomobilga mos yoqilg'i va 4 xonali kod/QR tekshiruvi.",
+        bulletPoints: [
+          "Avtomobilga bog'lash: BYD Song Plus (AI-92/95), Cobalt/Lacetti (Metan/Propan/AI-92), elektromobil ogohlantirishi.",
+          "Boshqa kolonka uchun to'lovdan himoya: displeydagi 4 xonali kod yoki QR skanerlash.",
+          "Jonli GPS + «Eng yaxshilari yaqinda» saralashi va oflayn/zaxira interaktiv xarita rejimi.",
+        ],
+        speakerNote:
+          "Hakamlar oldida metan va propanni almashtirib, TX qoidalari va 4 xonali kod himoyasini ko'rsating.",
+        keyMetricValue: '4 xonali QR',
+        keyMetricLabel: 'xato kolonka himoyasi + TX AGTKSh',
+        proofView: 'fuel',
+        proofLabel: 'Himoyani sinash',
       },
     ],
     qaItems: [
@@ -683,6 +719,24 @@ const CONTENT_BY_LANG: Record<AppLanguage, ShowcaseLocalizedContent> = {
         proofView: 'profile',
         proofLabel: 'Show cards & cashback',
       },
+      {
+        id: 'safety',
+        indexLabel: '05',
+        title: 'Safety Compliance, Car Matching & Pump Code Guard',
+        summary:
+          'dezagamiz enforces Uzbekistan CNG safety law automatically: prompts drivers to step out & open the hood for methane, keeps petrol/propane in-car, matches fuel per car model, and prevents paying the wrong bay via 4-digit code/QR.',
+        bulletPoints: [
+          'Car-aware fuel validation: BYD Song Plus (AI-92/95), Lacetti/Cobalt (CNG/LPG/AI-92), and EV alerts.',
+          'Zero wrong-pump accidents: verify 4-digit pump display code or scan QR on the dispenser.',
+          'Resilient geolocation + "Best Nearby" ranking and automatic interactive fallback map.',
+        ],
+        speakerNote:
+          'Show judges the switch between Methane (strict safety compliance notice) and Propane (Stay-in-Car green badge) plus the 4-digit bay guard.',
+        keyMetricValue: '4-digit QR',
+        keyMetricLabel: 'wrong-pump prevention + CNG safety rules',
+        proofView: 'fuel',
+        proofLabel: 'Verify bay & safety flow',
+      },
     ],
     qaItems: [
       {
@@ -909,6 +963,24 @@ const CONTENT_BY_LANG: Record<AppLanguage, ShowcaseLocalizedContent> = {
         proofView: 'profile',
         proofLabel: 'Карталар мен кэшбэк',
       },
+      {
+        id: 'safety',
+        indexLabel: '05',
+        title: 'Қауіпсіздік ережесі, көлік іріктеу және колонка қорғанысы',
+        summary:
+          'Метан құюда жүргізушіге салоннан шығып капот ашу ескертіледі, бензин/пропанда көлік ішінен төлем сақталады, көлік моделіне сай отын таңдалады және 4 таңбалы код/QR арқылы қате колонкадан қорғайды.',
+        bulletPoints: [
+          'Көлік моделі бойынша сүзгі: BYD Song Plus (АИ-92/95), Cobalt/Lacetti (Метан/Пропан/АИ-92), электрокар ескертуі.',
+          'Қате колонкаға төлеуден қорғаныс: дисплейдегі 4 таңбалы кодты енгізу немесе QR сканерлеу.',
+          'Геолокация + «Жақындағы үздіктер» сұрыптауы және сенімді қосалқы карта режимі.',
+        ],
+        speakerNote:
+          'Метан мен пропан арасындағы қауіпсіздік жолағын және 4 таңбалы колонка кодын көрсетіңіз.',
+        keyMetricValue: '4 таңбалы QR',
+        keyMetricLabel: 'колонка қорғанысы + АГНКС ережесі',
+        proofView: 'fuel',
+        proofLabel: 'Қорғанысты тексеру',
+      },
     ],
     qaItems: [
       {
@@ -1134,6 +1206,24 @@ const CONTENT_BY_LANG: Record<AppLanguage, ShowcaseLocalizedContent> = {
         keyMetricLabel: 'ilk gerçek aylık gelir için yeterli',
         proofView: 'profile',
         proofLabel: 'Kartlar ve iadeyi göster',
+      },
+      {
+        id: 'safety',
+        indexLabel: '05',
+        title: 'Güvenlik Kuralları, Araç Eşleştirme ve Pompa Kodu',
+        summary:
+          'Metan dolumunda kaputu açma güvenlik kuralını, benzin/propanda araç içi ödeme konforunu uygular; araç modeline uygun yakıtı seçer ve 4 haneli kod/QR ile yanlış pompa ödemesini engeller.',
+        bulletPoints: [
+          'Araca özel yakıt kontrolü: BYD Song Plus (AI-92/95), Cobalt/Lacetti (Metan/LPG/AI-92) ve EV uyarısı.',
+          'Yanlış pompa koruması: pompa ekranındaki 4 haneli kod veya QR tarama doğrulaması.',
+          'Canlı konum + «Yakındaki En İyiler» sıralaması ve otomatik yedek harita görünümü.',
+        ],
+        speakerNote:
+          'Jüri önünde metan güvenlik uyarısını, araç içi propan modunu ve 4 haneli pompa kodunu gösterin.',
+        keyMetricValue: '4 haneli QR',
+        keyMetricLabel: 'pompa güvenliği + CNG mevzuatı',
+        proofView: 'fuel',
+        proofLabel: 'Pompa korumasını test et',
       },
     ],
     qaItems: [

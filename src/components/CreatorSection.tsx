@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import {
+  Activity,
   ArrowRight,
   CarFront,
   Check,
@@ -9,6 +10,7 @@ import {
   Lock,
   Save,
   ShieldAlert,
+  ShieldCheck,
   SlidersHorizontal,
   Users,
 } from 'lucide-react';
@@ -16,10 +18,16 @@ import {
   advanceCreatorOrder,
   fetchCreatorOverview,
   lockCreatorSection,
+  recordCreatorEvent,
   switchCreatorRole,
   unlockCreatorSection,
   updateCreatorStation,
 } from '../api/client';
+import {
+  CAR_MODEL_SUGGESTIONS,
+  computeBayDisplayCode,
+  getVehicleFuelProfile,
+} from '../lib/dezagamiz';
 import { useI18n } from '../lib/i18n';
 import type {
   AccessRole,
@@ -27,6 +35,8 @@ import type {
   FuelCode,
   FuelStation,
   SessionPayload,
+  StationOperationalStatus,
+  StationQueueLevel,
 } from '../types/dezagamiz';
 
 interface CreatorSectionProps {
@@ -69,9 +79,37 @@ export function CreatorSection({
     {},
   );
   const [bayDraft, setBayDraft] = useState<Record<number, boolean>>({});
+  const [statusDraft, setStatusDraft] = useState<StationOperationalStatus>('open');
+  const [queueDraft, setQueueDraft] = useState<StationQueueLevel>('low');
+  const [disabledFuelsDraft, setDisabledFuelsDraft] = useState<FuelCode[]>([]);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [savingStation, setSavingStation] = useState(false);
+
+  // Built-in showcase & competition verifier sandbox: car fuel match + TB + 4-digit bay code
+  const [sandboxCar, setSandboxCar] = useState<string>(CAR_MODEL_SUGGESTIONS[0]);
+  const [sandboxFuel, setSandboxFuel] = useState<FuelCode>('metan');
+  const [sandboxBay, setSandboxBay] = useState<number>(1);
+  const [sandboxCode, setSandboxCode] = useState<string>('');
+  const [sandboxResult, setSandboxResult] = useState<{
+    passed: boolean;
+    verdict: string;
+    safetyRule: string;
+  } | null>(null);
+  const [sandboxBusy, setSandboxBusy] = useState(false);
+
+  function syncDraftsFromStation(st: FuelStation) {
+    setPriceDraft({ ...st.prices });
+    const baysObj: Record<number, boolean> = {};
+    st.bays.forEach((b) => {
+      baysObj[b.number] = b.available;
+    });
+    setBayDraft(baysObj);
+    setStatusDraft(st.operationalStatus ?? 'open');
+    setQueueDraft(st.queueLevel ?? 'low');
+    setDisabledFuelsDraft(st.disabledFuels ?? []);
+    setSandboxCode(computeBayDisplayCode(st.id, sandboxBay));
+  }
 
   useEffect(() => {
     if (!isCreator) {
@@ -88,12 +126,7 @@ export function CreatorSection({
         if (!selectedStationId && data.stations[0]) {
           const first = data.stations[0];
           setSelectedStationId(first.id);
-          setPriceDraft({ ...first.prices });
-          const baysObj: Record<number, boolean> = {};
-          first.bays.forEach((b) => {
-            baysObj[b.number] = b.available;
-          });
-          setBayDraft(baysObj);
+          syncDraftsFromStation(first);
         }
       })
       .catch((err) => {
@@ -117,12 +150,7 @@ export function CreatorSection({
     setActionError(null);
     const st = overview?.stations.find((s) => s.id === stationId);
     if (st) {
-      setPriceDraft({ ...st.prices });
-      const baysObj: Record<number, boolean> = {};
-      st.bays.forEach((b) => {
-        baysObj[b.number] = b.available;
-      });
-      setBayDraft(baysObj);
+      syncDraftsFromStation(st);
     }
   }
 
@@ -200,6 +228,9 @@ export function CreatorSection({
       const updated = await updateCreatorStation(selectedStationId, {
         prices: priceDraft,
         bayAvailability: bayDraft,
+        operationalStatus: statusDraft,
+        queueLevel: queueDraft,
+        disabledFuels: disabledFuelsDraft,
       });
       setOverview(updated);
       onStationsUpdated(updated.stations);
@@ -210,6 +241,49 @@ export function CreatorSection({
       );
     } finally {
       setSavingStation(false);
+    }
+  }
+
+  async function handleRunSafetySandbox() {
+    const activeSt =
+      overview?.stations.find((s) => s.id === selectedStationId) ||
+      overview?.stations[0];
+    if (!activeSt) return;
+
+    const profile = getVehicleFuelProfile(sandboxCar);
+    const expectedCode = computeBayDisplayCode(activeSt.id, sandboxBay);
+    const fuelAllowed =
+      profile.powertrain !== 'ev_only' &&
+      (profile.supportsGas || (sandboxFuel !== 'metan' && sandboxFuel !== 'propan'));
+    const codeMatches = sandboxCode.trim() === expectedCode;
+
+    const safetyRule =
+      sandboxFuel === 'metan' ? t.safetyMetanRule : t.safetyStayInCarNote;
+
+    let passed = false;
+    let verdict = '';
+    if (!fuelAllowed) {
+      verdict = `${t.creatorCheckBlockedFuel} (${localizeCarModel(sandboxCar)} · ${fuelShortLabel(sandboxFuel)})`;
+    } else if (!codeMatches) {
+      verdict = `${t.creatorCheckBlockedCode} (№${sandboxBay} · ${expectedCode})`;
+    } else {
+      passed = true;
+      verdict = `${t.creatorCheckPassed} (${localizeCarModel(sandboxCar)} · ${fuelShortLabel(sandboxFuel)} · №${sandboxBay})`;
+    }
+
+    setSandboxResult({ passed, verdict, safetyRule });
+    setSandboxBusy(true);
+    try {
+      const updated = await recordCreatorEvent({
+        type: 'safety_check',
+        title: `${sandboxCar} · ${fuelShortLabel(sandboxFuel)} · №${sandboxBay}`,
+        detail: verdict,
+      });
+      setOverview(updated);
+    } catch {
+      // Keep local sandbox verdict visible even if log call fails transiently
+    } finally {
+      setSandboxBusy(false);
     }
   }
 
@@ -514,22 +588,117 @@ export function CreatorSection({
                   onSubmit={handleSaveStationSettings}
                   className="mt-5 space-y-5"
                 >
+                  {/* Operational Status */}
                   <div>
                     <div className="text-xs font-semibold text-[var(--dz-ink-secondary)]">
-                      {t.creatorPricesLabel}
+                      {t.creatorOperationalStatusLabel}
+                    </div>
+                    <div className="mt-2 grid grid-cols-3 gap-2">
+                      {(
+                        [
+                          { id: 'open', label: t.stationStatusOpen },
+                          { id: 'busy', label: t.stationStatusBusy },
+                          { id: 'maintenance', label: t.stationStatusMaint },
+                        ] as const
+                      ).map((opt) => {
+                        const active = statusDraft === opt.id;
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            data-testid={`creator-status-${opt.id}`}
+                            onClick={() => setStatusDraft(opt.id)}
+                            className={`dz-focus min-h-[38px] rounded-xl border px-2 py-1.5 text-[11px] font-semibold transition-colors ${
+                              active
+                                ? 'dz-dark-active-glow border-[var(--dz-primary)] bg-[var(--dz-primary)] text-white'
+                                : 'border-[var(--dz-border)] bg-[var(--dz-surface-subtle)] text-[var(--dz-ink)] hover:border-[var(--dz-primary)]'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Queue Load Level */}
+                  <div>
+                    <div className="text-xs font-semibold text-[var(--dz-ink-secondary)]">
+                      {t.creatorQueueLevelLabel}
+                    </div>
+                    <div className="mt-2 grid grid-cols-3 gap-2">
+                      {(
+                        [
+                          { id: 'low', label: t.queueLowLabel },
+                          { id: 'medium', label: t.queueMediumLabel },
+                          { id: 'high', label: t.queueHighLabel },
+                        ] as const
+                      ).map((opt) => {
+                        const active = queueDraft === opt.id;
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            data-testid={`creator-queue-${opt.id}`}
+                            onClick={() => setQueueDraft(opt.id)}
+                            className={`dz-focus min-h-[38px] rounded-xl border px-2 py-1.5 text-[11px] font-semibold transition-colors ${
+                              active
+                                ? 'dz-dark-active-glow border-[var(--dz-primary)] bg-[var(--dz-surface-tint)] text-[var(--dz-primary)]'
+                                : 'border-[var(--dz-border)] bg-[var(--dz-surface-subtle)] text-[var(--dz-ink)] hover:border-[var(--dz-primary)]'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Fuel Prices & Availability Toggles */}
+                  <div>
+                    <div className="text-xs font-semibold text-[var(--dz-ink-secondary)]">
+                      {t.creatorPricesLabel} · {t.creatorFuelAvailabilityLabel}
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-3">
                       {(['metan', 'propan', 'ai92', 'ai95'] as FuelCode[]).map(
                         (code) => {
                           if (!editedStation.prices[code]) return null;
+                          const isDisabled = disabledFuelsDraft.includes(code);
                           return (
-                            <div key={code}>
-                              <label
-                                htmlFor={`price-${code}`}
-                                className="block text-xs font-medium text-[var(--dz-ink)]"
-                              >
-                                {fuelShortLabel(code)} ({fuelUnit(code)})
-                              </label>
+                            <div
+                              key={code}
+                              className={`rounded-2xl border p-2.5 transition-colors ${
+                                isDisabled
+                                  ? 'border-[var(--dz-border)] bg-[var(--dz-bg)] opacity-75'
+                                  : 'border-[var(--dz-border)] bg-[var(--dz-surface-subtle)]'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between gap-1">
+                                <label
+                                  htmlFor={`price-${code}`}
+                                  className="text-xs font-semibold text-[var(--dz-ink)]"
+                                >
+                                  {fuelShortLabel(code)} ({fuelUnit(code)})
+                                </label>
+                                <button
+                                  type="button"
+                                  data-testid={`creator-fuel-toggle-${code}`}
+                                  onClick={() =>
+                                    setDisabledFuelsDraft((prev) =>
+                                      prev.includes(code)
+                                        ? prev.filter((item) => item !== code)
+                                        : [...prev, code],
+                                    )
+                                  }
+                                  className={`dz-focus rounded-lg px-2 py-0.5 text-[10px] font-bold transition-colors ${
+                                    isDisabled
+                                      ? 'bg-[var(--dz-danger-bg)] text-[var(--dz-danger)]'
+                                      : 'bg-[#E9F7EF] dark:bg-[#0D2B22] text-[#0A7E42] dark:text-[#34D399]'
+                                  }`}
+                                >
+                                  {isDisabled ? t.creatorFuelOff : t.creatorFuelOn}
+                                </button>
+                              </div>
                               <input
                                 id={`price-${code}`}
                                 type="number"
@@ -543,7 +712,7 @@ export function CreatorSection({
                                     [code]: Number(e.target.value) || 0,
                                   }))
                                 }
-                                className="dz-focus mt-1 h-10 w-full rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-3 font-mono-tabular text-sm font-bold text-[var(--dz-ink)]"
+                                className="dz-focus mt-1.5 h-9 w-full rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-3 font-mono-tabular text-sm font-bold text-[var(--dz-ink)]"
                               />
                             </div>
                           );
@@ -681,6 +850,220 @@ export function CreatorSection({
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                )}
+              </section>
+
+              {/* Safety & Pump Code Verification Sandbox for Live Jury Demo */}
+              <section
+                data-testid="creator-safety-sandbox"
+                className="rounded-3xl border border-[var(--dz-border)] bg-[var(--dz-surface)] p-6 shadow-[var(--dz-shadow-sm)]"
+              >
+                <div className="flex items-center gap-2 text-xs font-semibold text-[var(--dz-primary)]">
+                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                  <span>{t.creatorSafetySandboxTitle}</span>
+                </div>
+                <p className="mt-1 text-xs text-[var(--dz-ink-secondary)]">
+                  {t.creatorSafetySandboxSub}
+                </p>
+
+                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <div>
+                    <label
+                      htmlFor="sandbox-car-select"
+                      className="block text-[11px] font-semibold text-[var(--dz-ink-secondary)]"
+                    >
+                      {t.creatorTestCarLabel}
+                    </label>
+                    <select
+                      id="sandbox-car-select"
+                      data-testid="sandbox-car-select"
+                      value={sandboxCar}
+                      onChange={(e) => {
+                        setSandboxCar(e.target.value);
+                        setSandboxResult(null);
+                      }}
+                      className="dz-focus mt-1 h-10 w-full rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-2.5 text-xs font-semibold text-[var(--dz-ink)]"
+                    >
+                      {CAR_MODEL_SUGGESTIONS.map((m) => (
+                        <option key={m} value={m}>
+                          {localizeCarModel(m)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="sandbox-fuel-select"
+                      className="block text-[11px] font-semibold text-[var(--dz-ink-secondary)]"
+                    >
+                      {t.creatorTestFuelLabel}
+                    </label>
+                    <select
+                      id="sandbox-fuel-select"
+                      data-testid="sandbox-fuel-select"
+                      value={sandboxFuel}
+                      onChange={(e) => {
+                        setSandboxFuel(e.target.value as FuelCode);
+                        setSandboxResult(null);
+                      }}
+                      className="dz-focus mt-1 h-10 w-full rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-2.5 text-xs font-semibold text-[var(--dz-ink)]"
+                    >
+                      {(['metan', 'propan', 'ai92', 'ai95'] as FuelCode[]).map((c) => (
+                        <option key={c} value={c}>
+                          {fuelShortLabel(c)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="sandbox-bay-select"
+                      className="block text-[11px] font-semibold text-[var(--dz-ink-secondary)]"
+                    >
+                      {t.creatorTestBayLabel}
+                    </label>
+                    <select
+                      id="sandbox-bay-select"
+                      data-testid="sandbox-bay-select"
+                      value={sandboxBay}
+                      onChange={(e) => {
+                        const nextBay = Number(e.target.value);
+                        setSandboxBay(nextBay);
+                        if (editedStation) {
+                          setSandboxCode(
+                            computeBayDisplayCode(editedStation.id, nextBay),
+                          );
+                        }
+                        setSandboxResult(null);
+                      }}
+                      className="dz-focus mt-1 h-10 w-full rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-2.5 font-mono-tabular text-xs font-semibold text-[var(--dz-ink)]"
+                    >
+                      {(editedStation?.bays || [{ number: 1 }, { number: 2 }, { number: 3 }]).map(
+                        (b) => (
+                          <option key={b.number} value={b.number}>
+                            №{b.number}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between gap-1">
+                      <label
+                        htmlFor="sandbox-code-input"
+                        className="block text-[11px] font-semibold text-[var(--dz-ink-secondary)]"
+                      >
+                        {t.creatorTestCodeInputLabel}
+                      </label>
+                      {editedStation && (
+                        <button
+                          type="button"
+                          data-testid="sandbox-autofill-btn"
+                          onClick={() => {
+                            setSandboxCode(
+                              computeBayDisplayCode(editedStation.id, sandboxBay),
+                            );
+                            setSandboxResult(null);
+                          }}
+                          className="text-[10px] font-semibold text-[var(--dz-primary)] hover:underline"
+                        >
+                          {t.bayCodeAutofillBtn}
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      id="sandbox-code-input"
+                      data-testid="sandbox-code-input"
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={4}
+                      value={sandboxCode}
+                      onChange={(e) => {
+                        setSandboxCode(e.target.value.replace(/\D/g, '').slice(0, 4));
+                        setSandboxResult(null);
+                      }}
+                      placeholder="••••"
+                      className="dz-focus mt-1 h-10 w-full rounded-xl border border-[var(--dz-border)] bg-[var(--dz-surface)] px-3 font-mono-tabular text-xs font-bold text-[var(--dz-ink)]"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    data-testid="creator-run-check-btn"
+                    disabled={sandboxBusy}
+                    onClick={() => void handleRunSafetySandbox()}
+                    className="dz-focus inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[var(--dz-primary)] px-4 text-xs font-semibold text-white transition-colors hover:bg-[var(--dz-primary-hover)] disabled:opacity-60"
+                  >
+                    <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                    <span>{t.creatorRunCheckBtn}</span>
+                  </button>
+                </div>
+
+                {sandboxResult && (
+                  <div
+                    data-testid="creator-sandbox-result"
+                    className={`dz-feedback-enter mt-4 space-y-1.5 rounded-2xl border p-3.5 text-xs ${
+                      sandboxResult.passed
+                        ? 'border-[#BCE3D3] dark:border-[#1E6B50] bg-[var(--dz-success-bg)] text-[var(--dz-success)]'
+                        : 'border-amber-400/75 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100'
+                    }`}
+                  >
+                    <div className="font-bold">{sandboxResult.verdict}</div>
+                    <div className="opacity-90">{sandboxResult.safetyRule}</div>
+                  </div>
+                )}
+              </section>
+
+              {/* Live Demo & Security Audit Feed */}
+              <section
+                data-testid="creator-events-feed"
+                className="overflow-hidden rounded-3xl border border-[var(--dz-border)] bg-[var(--dz-surface)] shadow-[var(--dz-shadow-sm)]"
+              >
+                <div className="flex items-center justify-between border-b border-[var(--dz-border)] px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    <Activity
+                      className="h-4 w-4 text-[var(--dz-primary)]"
+                      aria-hidden="true"
+                    />
+                    <h2 className="font-display text-lg font-bold text-[var(--dz-ink)]">
+                      {t.creatorDemoEventsTitle} ({overview.events?.length ?? 0})
+                    </h2>
+                  </div>
+                </div>
+                {!overview.events || overview.events.length === 0 ? (
+                  <div className="p-6 text-sm text-[var(--dz-ink-secondary)]">
+                    {t.creatorDemoEventsEmpty}
+                  </div>
+                ) : (
+                  <div className="divide-y divide-[var(--dz-border)]">
+                    {overview.events.slice(0, 8).map((ev) => (
+                      <div
+                        key={ev.id}
+                        className="flex flex-wrap items-start justify-between gap-2 px-6 py-3 text-xs"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="font-semibold text-[var(--dz-ink)]">
+                            {ev.title}
+                          </div>
+                          <div className="mt-0.5 text-[var(--dz-ink-secondary)]">
+                            {ev.detail}
+                          </div>
+                        </div>
+                        <span className="shrink-0 font-mono-tabular text-[11px] text-[var(--dz-ink-muted)]">
+                          {new Date(ev.timestamp).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                          })}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </section>
